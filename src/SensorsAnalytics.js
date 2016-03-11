@@ -17,19 +17,19 @@ class SensorsAnalytics {
   }
 
   profileSet(distinctId, properties) {
-    this.internalTrack({ type: 'profile_set', distinctId, originalId: distinctId, properties })
+    this.internalTrack({ type: 'profile_set', distinctId, properties })
   }
 
   profileSetOnce(distinctId, properties) {
-    this.internalTrack({ type: 'profile_set_once', distinctId, originalId: distinctId, properties })
+    this.internalTrack({ type: 'profile_set_once', distinctId, properties })
   }
 
   profileIncrement(distinctId, properties) {
-    this.internalTrack({ type: 'profile_increment', distinctId, originalId: distinctId, properties })
+    this.internalTrack({ type: 'profile_increment', distinctId, properties })
   }
 
   profileAppend(distinctId, properties) {
-    this.internalTrack({ type: 'profile_append', distinctId, originalId: distinctId, properties })
+    this.internalTrack({ type: 'profile_append', distinctId, properties })
   }
 
   profileUnset(distinctId, keys = []) {
