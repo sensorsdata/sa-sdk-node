@@ -1,7 +1,7 @@
 Sensors Analytics  [![NPM version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Dependency Status][depstat-image]][depstat-url]
 ==============================
 
-> This is the home-brewed version of Node SDK for Sensors Analytics.
+> This is the home-brewed version of Node SDK for [Sensors Analytics].
 
 ## Install
 
@@ -44,6 +44,8 @@ sa.profileAppend('user-id', { tags: ['student', 'developer'] })
 sa.profileUnset('user-id', ['temporaryTag'])
 
 ```
+
+For more detailed information about each api, checkout [Sensors Analytics manual]
 
 ### Config Submitter
 
@@ -127,7 +129,7 @@ sa.debounce(500)
 textInput.onChange((text) => sa.track(userId, 'userType', { text }))
 ```
 
-### Rx
+### RxJS
 
 This library is powered by Microsoft's [RxJS].
 
@@ -155,6 +157,8 @@ MIT
 [depstat-url]: https://gemnasium.com/timnew/sa-sdk-node
 [depstat-image]: http://img.shields.io/gemnasium/timnew/sa-sdk-node.svg?style=flat
 
+[Sensors Analytics]: http://sensorsdata.cn/
+[Sensors Analytics manual]: http://sensorsdata.cn/manual/index.html
 [RxJS]: https://github.com/Reactive-Extensions/RxJS
 [Observable]: https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observable.md
 [Observer]: https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observer.md
