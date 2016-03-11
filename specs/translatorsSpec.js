@@ -46,6 +46,11 @@ describe('translators', () => {
 
       expect(translated).to.deep.equal({ $time: 'time', $super_man: 'clark', man: 1, man_power: 100 })
     })
+
+    it('should support null and undefined', () => {
+      expect(translateKeys((key) => key.toUpperCase(), null)).to.be.null
+      expect(translateKeys((key) => key.toUpperCase(), undefined)).to.be.undefined
+    })
   })
 
   describe('translateTimeStamp', () => {

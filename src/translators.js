@@ -6,12 +6,17 @@ export function pascal2Snake(text) {
   return text.replace(UPPER_CASE_LETTER, (match, letter) => `_${letter.toLowerCase()}`)
 }
 
-export const translateKeys = R.curry((translator, object) =>
-  R.reduce((result, key) => {
+export const translateKeys = R.curry((translator, object) => {
+  if (object == null) {
+    return object
+  }
+
+  return R.reduce((result, key) => {
     result[translator(key) || key] = object[key]
 
     return result
-  }, {}, R.keys(object)))
+  }, {}, R.keys(object))
+})
 
 export function translateTimeStamp(timestamp) {
   if (timestamp == null) {
