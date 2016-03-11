@@ -1,4 +1,4 @@
-import { Observer } from 'rx'
+import { Subject } from 'rx'
 import urlUtil from 'url'
 import fetch from 'node-fetch'
 import zlib from 'mz/zlib'
@@ -14,26 +14,24 @@ const MODES = {
   dryRun: { debug: true, dryRun: true },
 }
 
-class Submitter extends Observer {
+class Submitter extends Subject {
   constructor(url, { gzip = true, mode = 'track', timeout = DEFAULT_TIMEOUT } = {}) {
     Object.assign(this, { url, gzip, timeout }, MODES[mode])
+
+    debug('Config: %o', this)
   }
 
-  onNext(data) {
-    if (Array.isArray(data)) {
-      this.submit(data)
-    } else {
-      this.submit([data])
+  async onNext(data) {
+    debug('onNext(%o)', data)
+
+    const messages = Array.isArray(data) ? data : [data]
+
+    try {
+      await this.submit(messages)
+    } catch (ex) {
+      debug('Error: %o', ex)
+      this.onError(ex)
     }
-  }
-
-  onError(err) {
-    debug('Error: %o', err)
-    throw err
-  }
-
-  onCompleted() {
-    debug('Completed')
   }
 
   async submit(messages) {
@@ -51,7 +49,21 @@ class Submitter extends Observer {
 
     const actualUrl = this.debug ? urlUtil.resolve(this.url, '/debug') : this.url
 
-    return await fetch(actualUrl, { method: 'POST', headers, body, timeout: this.timeout })
+    debug('Post to %s', actualUrl)
+    debug('Headers: %o', headers)
+    debug('Body: %o', body)
+
+    const response = await fetch(actualUrl, { method: 'POST', headers, body, timeout: this.timeout })
+
+    if (response.ok) {
+      debug('Suceeded')
+      return
+    }
+
+    debug('Error: %s', response.status)
+
+    const errorMessage = await response.text()
+    throw new Error(errorMessage)
   }
 }
 
