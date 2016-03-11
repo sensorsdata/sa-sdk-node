@@ -2,7 +2,7 @@
   "name": "sa-sdk-node",
   "version": "0.0.1",
   "description": "Sensor Data SDK for node.js",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "gulp spec"
   },
