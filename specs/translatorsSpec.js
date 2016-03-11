@@ -55,12 +55,12 @@ describe('translators', () => {
 
   describe('translateTimeStamp', () => {
     it('should convert date', () => {
-      const timestamp = translateTimeStamp(new Date('2015-1-28'))
+      const timestamp = translateTimeStamp(new Date('2015-01-28T00:00:00+08:00'))
       expect(timestamp).to.equal(1422374400000)
     })
 
     it('should support moment like object', () => {
-      const timestamp = translateTimeStamp({ toDate() { return new Date('2015-1-28') } })
+      const timestamp = translateTimeStamp({ toDate() { return new Date('2015-01-28T00:00:00+08:00') } })
       expect(timestamp).to.equal(1422374400000)
     })
 
@@ -70,11 +70,6 @@ describe('translators', () => {
     })
 
     it('should support string', () => {
-      const timestamp = translateTimeStamp('2015-1-28')
-      expect(timestamp).to.equal(1422374400000)
-    })
-
-    it('should support ISO String', () => {
       const timestamp = translateTimeStamp('2015-01-28T00:00:00+08:00')
       expect(timestamp).to.equal(1422374400000)
     })
