@@ -1,6 +1,6 @@
-import { pascal2Snake, translateKeys } from '../src/changeCase'
+import { pascal2Snake, translateKeys, translateTimeStamp } from '../src/translators'
 
-describe('changeCase', () => {
+describe('translators', () => {
   describe('pascal2Snake', () => {
     it('should convert pascal case to snake case', () => {
       expect(pascal2Snake('super')).to.equal('super')
@@ -45,6 +45,38 @@ describe('changeCase', () => {
       const translated = translateKeys(pascal2Snake, { $time: 'time', $superMan: 'clark', man: 1, manPower: 100 })
 
       expect(translated).to.deep.equal({ $time: 'time', $super_man: 'clark', man: 1, man_power: 100 })
+    })
+  })
+
+  describe('translateTimeStamp', () => {
+    it('should convert date', () => {
+      const timestamp = translateTimeStamp(new Date('2015-1-28'))
+      expect(timestamp).to.equal(1422374400000)
+    })
+
+    it('should support moment like object', () => {
+      const timestamp = translateTimeStamp({ toDate() { return new Date('2015-1-28') } })
+      expect(timestamp).to.equal(1422374400000)
+    })
+
+    it('should support direct number', () => {
+      const timestamp = translateTimeStamp(1422374400000)
+      expect(timestamp).to.equal(1422374400000)
+    })
+
+    it('should support string', () => {
+      const timestamp = translateTimeStamp('2015-1-28')
+      expect(timestamp).to.equal(1422374400000)
+    })
+
+    it('should support ISO String', () => {
+      const timestamp = translateTimeStamp('2015-01-28T00:00:00+08:00')
+      expect(timestamp).to.equal(1422374400000)
+    })
+
+    it('should handle null and undefined', () => {
+      const timestamp = translateTimeStamp(null)
+      expect(timestamp).to.be.a('number')
     })
   })
 })
