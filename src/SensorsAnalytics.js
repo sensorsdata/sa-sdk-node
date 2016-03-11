@@ -1,6 +1,6 @@
 import R from 'ramda'
 import { pascal2Snake, translateKeys, translateTimeStamp } from './translators'
-import { version as PACKAGE_VERSION } from './readPackageVersion'
+import { version as PACKAGE_VERSION } from './readPackageInfo'
 
 const snakenizeKeys = translateKeys(pascal2Snake)
 
