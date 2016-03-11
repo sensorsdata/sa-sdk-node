@@ -1,12 +1,12 @@
 import R from 'ramda'
+import { Subject } from 'rx'
 import { pascal2Snake, translateKeys, translateTimeStamp } from './translators'
 import { version as PACKAGE_VERSION } from './readPackageInfo'
 
 const snakenizeKeys = translateKeys(pascal2Snake)
 
-class SensorsAnalytics {
-  constructor(consumer) {
-    this.consumer = consumer
+class SensorsAnalytics extends Subject {
+  constructor() {
     this.clearSuperProperties()
   }
 
@@ -73,7 +73,7 @@ class SensorsAnalytics {
       properties: snakenizeKeys(properties),
     })
 
-    this.consumer.send(envelope)
+    this.onNext(envelope)
   }
 }
 
