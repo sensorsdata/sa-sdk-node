@@ -3,6 +3,8 @@ import { Subject } from 'rx'
 import { pascal2Snake, translateKeys, translateTimeStamp } from './translators'
 import { version as PACKAGE_VERSION } from './readPackageInfo'
 
+import Submitter from './Submitter'
+
 const snakenizeKeys = translateKeys(pascal2Snake)
 
 class SensorsAnalytics extends Subject {
@@ -74,6 +76,14 @@ class SensorsAnalytics extends Subject {
     })
 
     this.onNext(envelope)
+  }
+
+  submitTo(url, options) {
+    const submitter = new Submitter(url, options)
+
+    this.subscribe(submitter)
+
+    return submitter
   }
 }
 
