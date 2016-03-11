@@ -1,0 +1,7 @@
+--colors
+--growl
+--reporter spec
+--ui bdd
+--recursive
+--compilers js:babel-register
+--require ./specs/specHelper.js
