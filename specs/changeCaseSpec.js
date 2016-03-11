@@ -35,6 +35,12 @@ describe('changeCase', () => {
       expect(translated).to.deep.equal({ 1: 1, 2: 2 })
     })
 
+    it('should support curry', () => {
+      const translator = translateKeys((key) => key.toUpperCase())
+
+      expect(translator({ a: 1, b: 2, c: 3 })).to.deep.equal({ A: 1, B: 2, C: 3 })
+    })
+
     it('should convert to snake case', () => {
       const translated = translateKeys(pascal2Snake, { $time: 'time', $superMan: 'clark', man: 1, manPower: 100 })
 
