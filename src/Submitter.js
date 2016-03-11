@@ -1,3 +1,4 @@
+import R from 'ramda'
 import { Subject } from 'rx'
 import urlUtil from 'url'
 import fetch from 'node-fetch'
@@ -19,6 +20,14 @@ class Submitter extends Subject {
     Object.assign(this, { url, gzip, timeout }, MODES[mode])
 
     debug('Config: %o', this)
+  }
+
+  catch(callback) {
+    this.subscribe(
+      R.identity,
+      callback,
+      R.identity
+    )
   }
 
   async onNext(data) {
