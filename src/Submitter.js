@@ -16,8 +16,17 @@ const MODES = {
 }
 
 class Submitter extends Subject {
+  static composeDebugUrl(url) {
+    return urlUtil.format(R.merge(urlUtil.parse(url), { pathname: '/debug' }))
+  }
+
   constructor(url, { gzip = true, mode = 'track', timeout = DEFAULT_TIMEOUT } = {}) {
+    super()
     Object.assign(this, { url, gzip, timeout }, MODES[mode])
+
+    if (this.debug) {
+      this.url = Submitter.composeDebugUrl(url)
+    }
 
     debug('Config: %o', this)
   }
@@ -37,8 +46,10 @@ class Submitter extends Subject {
 
     try {
       await this.submit(messages)
+      debug('Submit succeeded')
+      super.onNext(null)
     } catch (ex) {
-      debug('Error: %o', ex)
+      debug('Submit error: %o', ex)
       this.onError(ex)
     }
   }
@@ -53,19 +64,20 @@ class Submitter extends Subject {
 
     const headers = {
       'User-Agent': 'SensorsAnalytics Node SDK',
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Dry-Run': this.dryRun ? 'true' : undefined,
     }
 
-    const actualUrl = this.debug ? urlUtil.resolve(this.url, '/debug') : this.url
-
-    debug('Post to %s', actualUrl)
+    debug('Post to %s', this.url)
     debug('Headers: %o', headers)
     debug('Body: %o', body)
 
-    const response = await fetch(actualUrl, { method: 'POST', headers, body, timeout: this.timeout })
+    debug('Posting...')
+    const response = await fetch(this.url, { method: 'POST', headers, body, timeout: this.timeout })
+    debug('Post complete')
 
     if (response.ok) {
-      debug('Suceeded')
+      debug('Suceeded: %d', response.status)
       return
     }
 

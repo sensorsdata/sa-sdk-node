@@ -9,6 +9,7 @@ const snakenizeKeys = translateKeys(pascal2Snake)
 
 class SensorsAnalytics extends Subject {
   constructor() {
+    super()
     this.clearSuperProperties()
   }
 
