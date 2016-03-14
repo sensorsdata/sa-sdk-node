@@ -2,6 +2,15 @@ import R from 'ramda'
 import { Subject } from 'rx'
 import { pascal2Snake, translateKeys, translateTimeStamp } from './translators'
 import { version as PACKAGE_VERSION } from './readPackageInfo'
+import {
+  checkExists,
+  checkPattern,
+  checkIsStringArray,
+  checkProperties,
+  checkValueType,
+  checkValueIsNumber,
+  checkValueIsStringArray,
+} from './assertions'
 
 import Submitter from './Submitter'
 
@@ -14,6 +23,9 @@ class SensorsAnalytics extends Subject {
   }
 
   registerSuperProperties(values = {}) {
+    checkProperties(values, checkPattern)
+    checkProperties(values, checkValueType)
+
     return Object.assign(this.superProperties, values)
   }
 
@@ -31,34 +43,57 @@ class SensorsAnalytics extends Subject {
   }
 
   track(distinctId, event, eventProperties) {
+    checkExists(distinctId, 'distinctId')
+    checkPattern(event, 'event')
+    checkProperties(eventProperties, checkValueType)
+
     const properties = this.superizeProperties(eventProperties)
 
     this.internalTrack('track', { event, distinctId, properties })
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
+    checkExists(distinctId, 'distinctId')
+    checkExists(originalId, 'originalId')
+    checkProperties(eventProperties, checkValueType)
+
     const properties = this.superizeProperties(eventProperties)
 
     this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties })
   }
 
   profileSet(distinctId, properties) {
+    checkExists(distinctId, 'distinctId')
+    checkProperties(properties, checkValueType)
+
     this.internalTrack('profile_set', { distinctId, properties })
   }
 
   profileSetOnce(distinctId, properties) {
+    checkExists(distinctId, 'distinctId')
+    checkProperties(properties, checkValueType)
+
     this.internalTrack('profile_set_once', { distinctId, properties })
   }
 
   profileIncrement(distinctId, properties) {
+    checkExists(distinctId, 'distinctId')
+    checkProperties(properties, checkValueIsNumber)
+
     this.internalTrack('profile_increment', { distinctId, properties })
   }
 
   profileAppend(distinctId, properties) {
+    checkExists(distinctId, 'distinctId')
+    checkProperties(properties, checkValueIsStringArray)
+
     this.internalTrack('profile_append', { distinctId, properties })
   }
 
   profileUnset(distinctId, keys = []) {
+    checkExists(distinctId, 'distinctId')
+    checkIsStringArray(keys, 'Keys')
+
     const properties = R.zipObj(keys, R.repeat(true, keys.length))
 
     this.internalTrack('profile_unset', { distinctId, properties })
@@ -73,7 +108,7 @@ class SensorsAnalytics extends Subject {
       time,
       distinctId,
       originalId,
-      properties: snakenizeKeys(properties),
+      properties: checkProperties(snakenizeKeys(properties), checkPattern),
     })
 
     this.onNext(envelope)
