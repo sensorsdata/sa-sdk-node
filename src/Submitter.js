@@ -55,7 +55,17 @@ class Submitter extends Subject {
   async onNext(data) {
     debug('onNext(%o)', data)
 
+    if (data == null) {
+      debug('Skiped due to empty data')
+      return
+    }
+
     const messages = Array.isArray(data) ? data : [data]
+
+    if (messages.length === 0) {
+      debug('Skiped due to empty batch data')
+      return
+    }
 
     try {
       await this.submit(messages)
