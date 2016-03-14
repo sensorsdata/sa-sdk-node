@@ -79,10 +79,26 @@ class SensorsAnalytics extends Subject {
     this.onNext(envelope)
   }
 
-  submitTo(options) {
+  inBatch({ count, timeSpan }) {
+    const mode = `${count != null ? 'count' : ''}${timeSpan != null ? 'time' : ''}`
+
+    switch (mode) {
+      case 'count':
+        return this.windowWithCount(count).filter((events) => events.length > 0)
+      case 'counttime':
+        return this.windowWithTimeOrCount(timeSpan, count).filter((events) => events.length > 0)
+      case 'time':
+        return this.windowWithTime(timeSpan).filter((events) => events.length > 0)
+      default:
+        return this
+    }
+  }
+
+  submitTo(options, batchOptions = {}) {
+    const observable = this.inBatch(batchOptions)
     const submitter = new Submitter(options)
 
-    this.subscribe(submitter)
+    observable.subscribe(submitter)
 
     return submitter
   }

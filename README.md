@@ -110,7 +110,7 @@ Network error handling
 submitter.catch((err) => console.error(err))
 ```
 
-### Advanced Filtering
+### Batch Mode
 
 Suppose
 
@@ -120,25 +120,47 @@ import SensorsAnalytics, { Submitter } from 'sa-sdk-node'
 const url = 'http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx'
 
 const sa = new SensorsAnalytics()
-
-const submitter = new Submitter(url)
-
 ```
 
-### Batch Mode
+#### Batch with count
+```js
+// Submit when 20 events are tracked
+sa.submitTo(url, { count: 20 })
+```
+
+#### Batch with time
+```js
+// Submit when every 5 seconds
+sa.submitTo(url, { timeSpan: 5 * 1000 })
+```
+
+#### Batch with time or count
+```js
+// Submit every 5 seconds, but also submit immediately if 20 events tracked
+sa.submitTo(url, { count: 20, timeSpan: 5 * 1000 })
+```
+
+#### Create batch manually
+
+`Batch` can be created manually if needed, which can be subscribed with `submitter` later
 
 ```js
-// Event will be submitted as 20 in a group
-sa.windowWithCount(20)
-  .subscribe(submitter)
+const batch = sa.inBatch({ count: 20, timeSpan: 5 * 1000 })
+
+batch.subscribe(new Submitter(url))
 ```
 
-### Batch or Timeout
-```js
-// Event will be submitted as 20 in a group or also will be submitted 5s passed from the first event
-sa.windowWithTimeOrCount(5000, 20)
-  .subscribe(submitter)
-```
+### Advanced Usage
+
+This library is powered by Microsoft's [RxJS].
+
+`SensorsAnalytics` is an [Observable], which yields tracking data.
+
+`Submitter` is an [Observer], which consume the tracking data.
+
+`Submitter` is also an [Observable], which yields next when submitted succeeded, and yields `Error` when network errors.
+
+Ideally, you can use all [RxJS] tricks with this library
 
 ### Filtering
 ```js
@@ -157,14 +179,7 @@ sa.debounce(500)
 textInput.onChange((text) => sa.track(userId, 'userType', { text }))
 ```
 
-### RxJS
-
-This library is powered by Microsoft's [RxJS].
-
-`SensorsAnalytics` is an [Observable], which yields tracking data
-`Submitter` is an [Observer], which consume the tracking data
-
-`Submitter` is also an [Observable], which yields `Error` when network errors.
+### More Detail
 
 For more detail, checkout Microsoft's [Rx documentation]
 
