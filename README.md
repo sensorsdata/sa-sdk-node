@@ -49,6 +49,7 @@ For more detailed information about each api, checkout [Sensors Analytics manual
 
 ### Config Submitter
 
+By default, submitter can be created with server url
 ```js
 import SensorsAnalytics from 'sa-sdk-node'
 
@@ -56,13 +57,27 @@ const url = 'http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx'
 
 const sa = new SensorsAnalytics()
 
-const submitter = sa.submitTo(url, { gzip: true, mode: 'track', timeout: 10 * 1000 })
+const submitter = sa.submitTo(url)
+```
+
+But it also can be created with explicit config
+
+```js
+import SensorsAnalytics from 'sa-sdk-node'
+
+const url = 'http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx'
+
+const sa = new SensorsAnalytics()
+
+const submitter = sa.submitTo({ url, gzip: true, mode: 'track', timeout: 10 * 1000 })
 // gzip: whether enable gzip, default to true
 // mode: could be 'track' (production use), 'debug' (diagnosis data), 'dryRun' (diagnosis with no data recorded), default to track
 // timeout: Http timeout in ms, default to 10s
 ```
 
 Submitter can be create manually and attach to `SensorsAnalytics` manually
+
+Created with url with default config
 
 ```js
 import SensorsAnalytics, { Submitter } from 'sa-sdk-node'
@@ -71,7 +86,20 @@ const url = 'http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx'
 
 const sa = new SensorsAnalytics()
 
-const submitter = new Submitter(url, { gzip: true, mode: 'track', timeout: 10 * 1000 })
+const submitter = new Submitter(url)
+
+sa.subscribe(submitter)
+```
+Or with explicit config
+
+```js
+import SensorsAnalytics, { Submitter } from 'sa-sdk-node'
+
+const url = 'http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx'
+
+const sa = new SensorsAnalytics()
+
+const submitter = new Submitter({ url, gzip: true, mode: 'track', timeout: 10 * 1000 })
 
 sa.subscribe(submitter)
 ```
@@ -93,7 +121,7 @@ const url = 'http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx'
 
 const sa = new SensorsAnalytics()
 
-const submitter = new Submitter(url, { gzip: true, mode: 'track', timeout: 10 * 1000 })
+const submitter = new Submitter(url)
 
 ```
 
