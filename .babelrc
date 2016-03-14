@@ -1,8 +1,9 @@
 {
   "presets": [
-    "stage-0"
+    "stage-0",
   ],
   "plugins": [
+    "transform-es2015-classes",
     "transform-decorators-legacy",
     "transform-es2015-destructuring",
     "transform-es2015-modules-commonjs",
@@ -10,6 +11,7 @@
     "transform-es2015-sticky-regex",
     "transform-es2015-unicode-regex",
     "transform-es2015-function-name",
-    "transform-es2015-spread"
+    "transform-es2015-spread",
+    "transform-es2015-object-super"
   ]
 }
