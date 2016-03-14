@@ -1,6 +1,6 @@
 {
   "name": "sa-sdk-node",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Sensor Data SDK for node.js",
   "main": "lib/index.js",
   "scripts": {
