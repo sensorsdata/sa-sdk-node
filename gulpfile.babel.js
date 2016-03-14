@@ -14,8 +14,14 @@ gulp.task('default', ['spec'])
 })
 gulp.task('bump', ['bump:patch'])
 
-gulp.task('spec', (done) => {
+gulp.task('spec', ['spec:ut'])
+
+gulp.task('spec:ut', (done) => {
   start('./node_modules/.bin/mocha --harmony --opts mocha.opts "specs/**/*Spec.js"', done)
+})
+
+gulp.task('spec:smoke', (done) => {
+  start('DEBUG=sa:* ./node_modules/.bin/mocha --harmony --opts mocha.opts "specs/smokingTest.js"', done)
 })
 
 gulp.task('build', ['build:babel'])
