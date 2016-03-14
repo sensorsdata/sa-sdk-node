@@ -79,8 +79,8 @@ class SensorsAnalytics extends Subject {
     this.onNext(envelope)
   }
 
-  submitTo(url, options) {
-    const submitter = new Submitter(url, options)
+  submitTo(options) {
+    const submitter = new Submitter(options)
 
     this.subscribe(submitter)
 

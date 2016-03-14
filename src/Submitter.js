@@ -20,8 +20,21 @@ class Submitter extends Subject {
     return urlUtil.format(R.merge(urlUtil.parse(url), { pathname: '/debug' }))
   }
 
-  constructor(url, { gzip = true, mode = 'track', timeout = DEFAULT_TIMEOUT } = {}) {
+  constructor({ url, gzip = true, mode = 'track', timeout = DEFAULT_TIMEOUT }) {
     super()
+
+    if (typeof arguments[0] === 'string') { // eslint-disable-line prefer-rest-params
+      url = arguments[0] // eslint-disable-line no-param-reassign, prefer-rest-params
+    }
+
+    if (url == null) {
+      throw new Error('Url is not provided')
+    }
+
+    if (MODES[mode] == null) {
+      throw new Error(`Unknown mode: ${mode}`)
+    }
+
     Object.assign(this, { url, gzip, timeout }, MODES[mode])
 
     if (this.debug) {
