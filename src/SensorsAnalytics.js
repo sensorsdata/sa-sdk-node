@@ -143,11 +143,11 @@ class SensorsAnalytics extends Subject {
 
     switch (mode) {
       case 'count':
-        return this.windowWithCount(count).filter((events) => events.length > 0)
+        return this.bufferWithCount(count).filter((events) => events.length > 0)
       case 'counttime':
-        return this.windowWithTimeOrCount(timeSpan, count).filter((events) => events.length > 0)
+        return this.bufferWithTimeOrCount(timeSpan, count).filter((events) => events.length > 0)
       case 'time':
-        return this.windowWithTime(timeSpan).filter((events) => events.length > 0)
+        return this.bufferWithTime(timeSpan).filter((events) => events.length > 0)
       default:
         return this
     }
