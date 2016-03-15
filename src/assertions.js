@@ -1,6 +1,6 @@
 import R from 'ramda'
 
-const KEY_PATTERN = /^((?!^distinct_id$|^original_id$|^time$|^properties$|^id$|^first_id$|^second_id$|^users$|^events$|^event$|^user_id$|^date$|^datetime$)[a-zA-Z_$][a-zA-Z\\d_$]{0,99})$/
+const KEY_PATTERN = /^((?!^distinct_id$|^original_id$|^time$|^properties$|^id$|^first_id$|^second_id$|^users$|^events$|^event$|^user_id$|^date$|^datetime$)[a-zA-Z_$][a-zA-Z\d_$]{0,99})$/
 
 export function checkExists(value, name = 'value') {
   if (typeof(value) !== 'string') {
@@ -22,7 +22,7 @@ export function checkPattern(value, name = 'value') {
   checkExists(value, name)
 
   if (!KEY_PATTERN.exec(value)) {
-    throw new Error('${name} is invalid')
+    throw new Error(`${name} is invalid`)
   }
 
   return value
