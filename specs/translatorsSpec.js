@@ -14,6 +14,11 @@ describe('translators', () => {
       expect(pascal2Snake('$date')).to.equal('$date')
       expect(pascal2Snake('$dateTime')).to.equal('$date_time')
     })
+
+    it('should support null value', () => {
+      expect(pascal2Snake(null)).to.be.null
+      expect(pascal2Snake(undefined)).to.be.undefined
+    })
   })
 
   describe('translateKeys', () => {

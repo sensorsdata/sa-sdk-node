@@ -124,7 +124,7 @@ class SensorsAnalytics extends Subject {
 
     const envelope = snakenizeKeys({
       type,
-      event,
+      event: pascal2Snake(event),
       time,
       distinctId,
       originalId,
