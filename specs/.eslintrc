@@ -8,6 +8,8 @@
     "no-unused-expressions": 0,
   },
   "globals": {
-    "expect": true,    
+    "expect": true,
+    "Sinon": true,
+    "monitorRx": true,
   }
 }
