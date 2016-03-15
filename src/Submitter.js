@@ -78,6 +78,7 @@ class Submitter extends Subject {
   }
 
   async submit(messages) {
+    debug('submit(%j)', messages)
     const payloadText = new Buffer(JSON.stringify(messages), 'utf8')
     const dataListBuffer = await (this.gzip ? zlib.gzip(payloadText) : payloadText)
     const body = encodeForm({
