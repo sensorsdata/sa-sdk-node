@@ -11,6 +11,9 @@ import {
   checkValueIsNumber,
   checkValueIsStringArray,
 } from './assertions'
+import createDebug from 'debug'
+
+const debug = createDebug('sa:SensorsAnalytics')
 
 import Submitter from './Submitter'
 
@@ -23,6 +26,7 @@ class SensorsAnalytics extends Subject {
   }
 
   registerSuperProperties(values = {}) {
+    debug('registerSuperProperties(%j)', values)
     checkProperties(values, checkPattern)
     checkProperties(values, checkValueType)
 
@@ -30,6 +34,8 @@ class SensorsAnalytics extends Subject {
   }
 
   clearSuperProperties() {
+    debug('clearSuperProperties()')
+
     this.superProperties = {
       $lib: 'Node',
       $libVersion: PACKAGE_VERSION,
@@ -43,6 +49,8 @@ class SensorsAnalytics extends Subject {
   }
 
   track(distinctId, event, eventProperties) {
+    debug('track(%j)', { distinctId, event, eventProperties })
+
     checkExists(distinctId, 'distinctId')
     checkPattern(event, 'event')
     checkProperties(eventProperties, checkValueType)
@@ -53,6 +61,8 @@ class SensorsAnalytics extends Subject {
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
+    debug('trackSignup(%j)', { distinctId, originalId, eventProperties })
+
     checkExists(distinctId, 'distinctId')
     checkExists(originalId, 'originalId')
     checkProperties(eventProperties, checkValueType)
@@ -63,6 +73,8 @@ class SensorsAnalytics extends Subject {
   }
 
   profileSet(distinctId, properties) {
+    debug('profileSet(%j)', { distinctId, properties })
+
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
 
@@ -70,6 +82,8 @@ class SensorsAnalytics extends Subject {
   }
 
   profileSetOnce(distinctId, properties) {
+    debug('profileSetOnce(%j)', { distinctId, properties })
+
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
 
@@ -77,6 +91,8 @@ class SensorsAnalytics extends Subject {
   }
 
   profileIncrement(distinctId, properties) {
+    debug('profileIncrement(%j)', { distinctId, properties })
+
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueIsNumber)
 
@@ -84,6 +100,8 @@ class SensorsAnalytics extends Subject {
   }
 
   profileAppend(distinctId, properties) {
+    debug('profileAppend(%j)', { distinctId, properties })
+
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueIsStringArray)
 
@@ -91,6 +109,8 @@ class SensorsAnalytics extends Subject {
   }
 
   profileUnset(distinctId, keys = []) {
+    debug('profileUnset(%j)', { distinctId, keys })
+
     checkExists(distinctId, 'distinctId')
     checkIsStringArray(keys, 'Keys')
 
@@ -111,11 +131,15 @@ class SensorsAnalytics extends Subject {
       properties: checkProperties(snakenizeKeys(properties), checkPattern),
     })
 
+    debug('envelope: %j', envelope)
+
     this.onNext(envelope)
   }
 
   inBatch({ count, timeSpan }) {
     const mode = `${count != null ? 'count' : ''}${timeSpan != null ? 'time' : ''}`
+
+    debug('inBatch(%j)', { count, timeSpan, mode })
 
     switch (mode) {
       case 'count':
@@ -130,6 +154,8 @@ class SensorsAnalytics extends Subject {
   }
 
   submitTo(options, batchOptions = {}) {
+    debug('submitTo(%j, %j)', options, batchOptions)
+
     const observable = this.inBatch(batchOptions)
     const submitter = new Submitter(options)
 

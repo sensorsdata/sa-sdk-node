@@ -39,6 +39,5 @@ export function translateTimeStamp(timestamp) {
     return timestamp.toDate().valueOf() // Support moment.js
   }
 
-
   throw new Error('Invalid timestamp')
 }
