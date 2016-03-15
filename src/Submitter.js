@@ -107,6 +107,11 @@ class Submitter extends Subject {
 
     debug('Error: %s', response.status)
 
+    if (this.debug && messages.count > 1 && response.status === 400) {
+      debug('Batch mode is not supported in debug')
+      throw new Error('Batch mode is not supported in Debug')
+    }
+
     const errorMessage = await response.text()
     throw new Error(errorMessage)
   }
