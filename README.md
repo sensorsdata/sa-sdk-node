@@ -110,7 +110,9 @@ Network error handling
 submitter.catch((err) => console.error(err))
 ```
 
-### Batch Mode
+### Batch Submit
+
+**WARN** Batch submit is not supported by `debug` or `dryRun` mode. It causes 400 bad-request error
 
 Suppose
 
