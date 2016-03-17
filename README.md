@@ -34,7 +34,7 @@ sa.track('user-id', "newOrder", { orderId: '123234', '$time': new Date('2016-03-
 
 
 // Track Signup
-sa.trackSignup('device-id', 'user-id')
+sa.trackSignup('user-id', 'anonymous-id/device-id')
 
 // Manipuate user project
 sa.profileSet('user-id', { age: 18 })
