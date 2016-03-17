@@ -69,6 +69,10 @@ class SensorsAnalytics extends Subject {
 
     const properties = this.superizeProperties(eventProperties)
 
+    // $SignUp will be converted into $_sign_up
+    // Comfirmed with SA guys, which doesn't matter
+    // If it does matters, it can escaped with Symbol instead of string
+    // By making pascal2Snake ignore Symbol
     this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties })
   }
 
