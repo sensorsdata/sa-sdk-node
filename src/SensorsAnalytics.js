@@ -19,6 +19,12 @@ import Submitter from './Submitter'
 
 const snakenizeKeys = translateKeys(pascal2Snake)
 
+function extractTimestamp(properties) {
+  const time = translateTimeStamp(properties.$time)
+  delete properties.$time // Remove the key if exists
+  return time
+}
+
 class SensorsAnalytics extends Subject {
   constructor() {
     super()
@@ -124,12 +130,10 @@ class SensorsAnalytics extends Subject {
   }
 
   internalTrack(type, { event, distinctId, originalId, properties }) {
-    const time = translateTimeStamp(properties.$time)
-
     const envelope = snakenizeKeys({
       type,
       event: pascal2Snake(event),
-      time,
+      time: extractTimestamp(properties),
       distinctId,
       originalId,
       properties: checkProperties(snakenizeKeys(properties), checkPattern),
