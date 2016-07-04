@@ -171,6 +171,10 @@ class SensorsAnalytics extends Subject {
 
     return submitter
   }
+
+  close() {
+    this.onCompleted()
+  }
 }
 
 export default SensorsAnalytics

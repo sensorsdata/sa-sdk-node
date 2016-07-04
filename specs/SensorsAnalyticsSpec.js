@@ -41,4 +41,18 @@ describe('SensorsAnalytics', () => {
     expect(values[1]).to.have.length(2)
     expect(values[2]).to.have.length(1)
   })
+
+  it.only('should flush data in batch when close', async () => {
+    const monitor = monitorRx(sa.inBatch({ count: 100 }))
+
+    sa.track(distinctId, 'a')
+    sa.track(distinctId, 'b')
+    sa.track(distinctId, 'c')
+
+    sa.close()
+
+    const notifications = await monitor.toNotifications()
+    const values = notifications[0].value.map((v) => v.event)
+    expect(values).to.deep.equal(['a', 'b', 'c'])
+  })
 })

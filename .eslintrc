@@ -1,5 +1,5 @@
 {
-  "extends": "eslint-config-airbnb/base",
+  "extends": "eslint-config-airbnb-base",
   "parser": "babel-eslint",
   "rules": {
     "semi": [2, "never"],
