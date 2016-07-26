@@ -44,3 +44,21 @@ export function translateTimeStamp(timestamp) {
 
   throw new Error('Invalid timestamp')
 }
+
+//   at /home/gbusey/file.js:525:2
+//   at Frobnicator.refrobulate (/home/gbusey/business-logic.js:424:21)
+//   at Actor.<anonymous> (/home/gbusey/actors.js:400:8)
+//   at increaseSynergy (/home/gbusey/actors.js:701:6)
+const CALL_INFO_REGEX = /^ {3}at ((((\w+)\.)?(\w+|<anonymous>) \((.+):(\d+):(\d+)\))|(.+):(\d+):(\d+))$/
+
+export function parseCallInfo(text) {
+  const matches = CALL_INFO_REGEX.exec(text)
+
+  return {
+    fileName: matches[6] || matches[9],
+    lineNumber: matches[7] || matches[10],
+    columnNumber: matches[8] || matches[11],
+    className: matches[4],
+    functionName: matches[5],
+  }
+}
