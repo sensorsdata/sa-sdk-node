@@ -29,12 +29,11 @@ sa.track('user-id', 'userHappy')
 // Track event with custom properties
 sa.track('user-id', 'newOrder', { orderId: '12323' })
 
-// Track event with specific time
-sa.track('user-id', "newOrder", { orderId: '123234', '$time': new Date('2016-03-12T05:24:19.894+08:00') })
-
-
 // Track Signup
 sa.trackSignup('user-id', 'anonymous-id/device-id')
+
+// Track Signup with custom properties
+sa.trackSignup('user-id', 'anonymous-id/device-id', { userType: 'administrator' })
 
 // Manipuate user project
 sa.profileSet('user-id', { age: 18 })
@@ -44,8 +43,56 @@ sa.profileAppend('user-id', { tags: ['student', 'developer'] })
 sa.profileUnset('user-id', ['temporaryTag'])
 
 ```
-
 For more detailed information about each api, checkout [Sensors Analytics manual]
+
+#### Override event time
+
+By default, the library uses current time as the time when event occurs,
+but the behavior can be overrode by `$time` property.
+
+* Both `track` and `trackSignup` support this feature.
+* `$time` can be `Date`, `number`, `string`, `Moment` instance
+
+```js
+import moment from 'moment'
+
+sa.track('user-id', 'newOrder', { orderId: '12323', $time: new Date(2016,7,30) })
+sa.track('user-id', 'newOrder', { orderId: '12323', $time: '2016-07-30T00:00:00+08:00' })
+sa.track('user-id', 'newOrder', { orderId: '12323', $time: 1469808000000 })
+sa.track('user-id', 'newOrder', { orderId: '12323', $time: moment() })
+
+sa.trackSignup('user-id', 'anonymous-id/device-id', { $time: new Date(2016,7,30) })
+sa.trackSignup('user-id', 'anonymous-id/device-id', { $time: '2016-07-30T00:00:00+08:00' })
+sa.trackSignup('user-id', 'anonymous-id/device-id', { $time: 1469808000000 })
+sa.trackSignup('user-id', 'anonymous-id/device-id', { $time: moment() })
+```
+
+#### Parse Geolocation
+
+SensorsData support parsing user geo location from IP address.
+
+* Both `track` and `trackSignup` support this feature.
+
+```js
+router.post('/api/new-order', (req, res) => {
+  sa.track(req.session.userId, 'newOrder', { $ip: req.ip })
+
+  // ...
+})
+```
+
+#### Parse User Agent
+
+Node SDK supports parsing client `OS`, `OS version`, `Browser`, `Browser version`, `Browser Engine`, `Model` from client's `User Agent`
+
+* Both `track` and `trackSignup` support this feature.
+
+```js
+router.post('/api/new-order', (req, res) => {
+  sa.track(req.session.userId, 'newOrder', { $userAgent: req.get('user-agent') })
+  // ...
+})
+```
 
 ### Config Submitter
 
