@@ -42,7 +42,7 @@ describe('SensorsAnalytics', () => {
     expect(values[2]).to.have.length(1)
   })
 
-  it.only('should flush data in batch when close', async () => {
+  it('should flush data in batch when close', async () => {
     const monitor = monitorRx(sa.inBatch({ count: 100 }))
 
     sa.track(distinctId, 'a')
