@@ -1,6 +1,12 @@
 import R from 'ramda'
 import { Subject } from 'rx'
-import { pascal2Snake, translateKeys, translateTimeStamp, extractCodeProperties } from './translators'
+import {
+  pascal2Snake,
+  snakenizeKeys,
+  extractTimestamp,
+  extractCodeProperties,
+  translateUserAgent,
+} from './translators'
 import { version as PACKAGE_VERSION } from './readPackageInfo'
 import {
   checkExists,
@@ -11,19 +17,11 @@ import {
   checkValueIsNumber,
   checkValueIsStringArray,
 } from './assertions'
-import createDebug from 'debug'
 
+import createDebug from 'debug'
 const debug = createDebug('sa:SensorsAnalytics')
 
 import Submitter from './Submitter'
-
-const snakenizeKeys = translateKeys(pascal2Snake)
-
-function extractTimestamp(properties) {
-  const time = translateTimeStamp(properties.$time)
-  delete properties.$time // Remove the key if exists
-  return time
-}
 
 const SDK_PROPERTIES = {
   $lib: 'Node',
@@ -55,7 +53,7 @@ class SensorsAnalytics extends Subject {
   superizeProperties(properties = {}, callIndex) {
     const codeProperties = extractCodeProperties(callIndex)
 
-    return R.mergeAll([SDK_PROPERTIES, this.superProperties, codeProperties, properties])
+    return R.mergeAll([SDK_PROPERTIES, this.superProperties, codeProperties, translateUserAgent(properties)])
   }
 
   track(distinctId, event, eventProperties) {

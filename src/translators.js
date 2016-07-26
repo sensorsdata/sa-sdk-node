@@ -1,6 +1,7 @@
 import R from 'ramda'
-import createDebug from 'debug'
+import detector from 'detector'
 
+import createDebug from 'debug'
 const debug = createDebug('sa:translators')
 
 const UPPER_CASE_LETTER = /([A-Z])/g
@@ -11,7 +12,6 @@ export function pascal2Snake(text) {
   }
   return text.replace(UPPER_CASE_LETTER, (match, letter) => `_${letter.toLowerCase()}`)
 }
-
 export const translateKeys = R.curry((translator, object) => {
   if (object == null) {
     return object
@@ -23,6 +23,8 @@ export const translateKeys = R.curry((translator, object) => {
     return result
   }, {}, R.keys(object))
 })
+
+export const snakenizeKeys = translateKeys(pascal2Snake)
 
 export function translateTimeStamp(timestamp) {
   if (timestamp == null) {
@@ -47,13 +49,13 @@ export function translateTimeStamp(timestamp) {
 
   throw new Error('Invalid timestamp')
 }
+export function extractTimestamp(properties) {
+  const time = translateTimeStamp(properties.$time)
+  delete properties.$time // Remove the key if exists
+  return time
+}
 
-//   at /home/gbusey/file.js:525:2
-//   at Frobnicator.refrobulate (/home/gbusey/business-logic.js:424:21)
-//   at Actor.<anonymous> (/home/gbusey/actors.js:400:8)
-//   at increaseSynergy (/home/gbusey/actors.js:701:6)
 const CALL_INFO_REGEX = /^\s*at ((((\w+)\.)?(\w+|<anonymous>) \(((.+):(\d+):(\d+)|(native))\))|(.+):(\d+):(\d+))$/
-
 export function parseCallInfo(text) {
   debug('parseCallInfo: %s', text)
 
@@ -71,7 +73,6 @@ export function parseCallInfo(text) {
     functionName: matches[5],
   }
 }
-
 export function extractCodeProperties(callerIndex) {
   const codeProperties = {
     $libMethod: 'code',
@@ -92,4 +93,47 @@ export function extractCodeProperties(callerIndex) {
   }
 
   return codeProperties
+}
+
+function patchOSName(os) {
+  switch (os.name) {
+    case 'ios':
+      os.name = 'iPhone OS'
+      break
+    case 'android':
+      os.name = 'Android'
+      break
+    default:
+      break
+  }
+}
+export function parseUserAgent(userAgent) {
+  if (userAgent == null) {
+    return undefined
+  }
+
+  const result = detector.parse(userAgent)
+  patchOSName(result.os)
+
+  return {
+    $os: result.os.name,
+    $model: result.device.name,
+    _browser_engine: result.engine.name,
+    $os_version: String(result.os.version),
+    $browser: result.browser.name,
+    $browser_version: String(result.browser.version),
+  }
+}
+export function translateUserAgent(properties) {
+  const { $userAgent } = properties
+
+  if ($userAgent == null) {
+    return properties
+  }
+
+  delete properties.$userAgent
+
+  const userAgentInfo = parseUserAgent($userAgent)
+
+  return Object.assign(userAgentInfo, properties)
 }
