@@ -1,4 +1,7 @@
 import R from 'ramda'
+import createDebug from 'debug'
+
+const debug = createDebug('sa:translators')
 
 const UPPER_CASE_LETTER = /([A-Z])/g
 
@@ -49,16 +52,44 @@ export function translateTimeStamp(timestamp) {
 //   at Frobnicator.refrobulate (/home/gbusey/business-logic.js:424:21)
 //   at Actor.<anonymous> (/home/gbusey/actors.js:400:8)
 //   at increaseSynergy (/home/gbusey/actors.js:701:6)
-const CALL_INFO_REGEX = /^ {3}at ((((\w+)\.)?(\w+|<anonymous>) \((.+):(\d+):(\d+)\))|(.+):(\d+):(\d+))$/
+const CALL_INFO_REGEX = /^\s*at ((((\w+)\.)?(\w+|<anonymous>) \(((.+):(\d+):(\d+)|(native))\))|(.+):(\d+):(\d+))$/
 
 export function parseCallInfo(text) {
+  debug('parseCallInfo: %s', text)
+
   const matches = CALL_INFO_REGEX.exec(text)
 
+  if (matches == null) {
+    return null
+  }
+
   return {
-    fileName: matches[6] || matches[9],
-    lineNumber: matches[7] || matches[10],
-    columnNumber: matches[8] || matches[11],
+    fileName: matches[7] || matches[10] || matches[11],
+    lineNumber: matches[8] || matches[12],
+    columnNumber: matches[9] || matches[13],
     className: matches[4],
     functionName: matches[5],
   }
+}
+
+export function extractCodeProperties(callerIndex) {
+  const codeProperties = {
+    $libMethod: 'code',
+  }
+
+  const callerInfo = new Error()
+  const stack = callerInfo.stack.split('\n', callerIndex + 1)
+  debug('extractCodeProperties: %j', stack)
+
+  const callInfo = parseCallInfo(stack[callerIndex])
+
+  if (callInfo != null) {
+    debug('Call info: %j', callInfo)
+    const { className, functionName, fileName, lineNumber, columnNumber } = callInfo
+    codeProperties.$libDetail = `${className}##${functionName}##${fileName}##${lineNumber},${columnNumber}`
+  } else {
+    debug('Call info not parsed')
+  }
+
+  return codeProperties
 }

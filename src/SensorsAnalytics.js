@@ -1,6 +1,6 @@
 import R from 'ramda'
 import { Subject } from 'rx'
-import { pascal2Snake, translateKeys, translateTimeStamp } from './translators'
+import { pascal2Snake, translateKeys, translateTimeStamp, extractCodeProperties } from './translators'
 import { version as PACKAGE_VERSION } from './readPackageInfo'
 import {
   checkExists,
@@ -25,6 +25,11 @@ function extractTimestamp(properties) {
   return time
 }
 
+const SDK_PROPERTIES = {
+  $lib: 'Node',
+  $libVersion: PACKAGE_VERSION,
+}
+
 class SensorsAnalytics extends Subject {
   constructor() {
     super()
@@ -42,16 +47,15 @@ class SensorsAnalytics extends Subject {
   clearSuperProperties() {
     debug('clearSuperProperties()')
 
-    this.superProperties = {
-      $lib: 'Node',
-      $libVersion: PACKAGE_VERSION,
-    }
+    this.superProperties = {}
 
     return this.superProperties
   }
 
-  superizeProperties(properties = {}) {
-    return R.merge(this.superProperties, properties)
+  superizeProperties(properties = {}, callIndex) {
+    const codeProperties = extractCodeProperties(callIndex)
+
+    return R.mergeAll([SDK_PROPERTIES, this.superProperties, codeProperties, properties])
   }
 
   track(distinctId, event, eventProperties) {
@@ -61,7 +65,7 @@ class SensorsAnalytics extends Subject {
     checkPattern(event, 'event')
     checkProperties(eventProperties, checkValueType)
 
-    const properties = this.superizeProperties(eventProperties)
+    const properties = this.superizeProperties(eventProperties, 4)
 
     this.internalTrack('track', { event, distinctId, properties })
   }
@@ -73,7 +77,7 @@ class SensorsAnalytics extends Subject {
     checkExists(originalId, 'originalId')
     checkProperties(eventProperties, checkValueType)
 
-    const properties = this.superizeProperties(eventProperties)
+    const properties = this.superizeProperties(eventProperties, 4)
 
     // $SignUp will be converted into $_sign_up
     // Comfirmed with SA guys, which doesn't matter

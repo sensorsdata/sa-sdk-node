@@ -87,43 +87,53 @@ describe('translators', () => {
 
   describe('parseCallInfo', () => {
     it('should parse anonymous call', () => {
-      const callInfo = parseCallInfo('   at /home/gbusey/file.js:525:2')
+      const callInfo = parseCallInfo('   at /Users/timnew/Workspace/apricot_forest/sa-sdk-node/test.js:23:2')
 
-      expect(callInfo).to.have.property('fileName', '/home/gbusey/file.js')
-      expect(callInfo).to.have.property('lineNumber', '525')
+      expect(callInfo).to.have.property('fileName', '/Users/timnew/Workspace/apricot_forest/sa-sdk-node/test.js')
+      expect(callInfo).to.have.property('lineNumber', '23')
       expect(callInfo).to.have.property('columnNumber', '2')
       expect(callInfo).to.have.property('className').that.is.undefined
       expect(callInfo).to.have.property('functionName').that.is.undefined
     })
 
     it('should parse function call', () => {
-      const callInfo = parseCallInfo('   at increaseSynergy (/home/gbusey/actors.js:701:6)')
+      const callInfo = parseCallInfo('    at extractCodeProperties (translators.js:78:22)')
 
-      expect(callInfo).to.have.property('fileName', '/home/gbusey/actors.js')
-      expect(callInfo).to.have.property('lineNumber', '701')
-      expect(callInfo).to.have.property('columnNumber', '6')
-      expect(callInfo).to.have.property('functionName', 'increaseSynergy')
+      expect(callInfo).to.have.property('fileName', 'translators.js')
+      expect(callInfo).to.have.property('lineNumber', '78')
+      expect(callInfo).to.have.property('columnNumber', '22')
+      expect(callInfo).to.have.property('functionName', 'extractCodeProperties')
       expect(callInfo).to.have.property('className').that.is.undefined
     })
 
     it('should parse named method call', () => {
-      const callInfo = parseCallInfo('   at Frobnicator.refrobulate (/home/gbusey/business-logic.js:424:21)')
+      const callInfo = parseCallInfo('    at SensorsAnalytics.superizeProperties (SensorsAnalytics.js:56:28)')
 
-      expect(callInfo).to.have.property('fileName', '/home/gbusey/business-logic.js')
-      expect(callInfo).to.have.property('lineNumber', '424')
-      expect(callInfo).to.have.property('columnNumber', '21')
-      expect(callInfo).to.have.property('functionName', 'refrobulate')
-      expect(callInfo).to.have.property('className', 'Frobnicator')
+      expect(callInfo).to.have.property('fileName', 'SensorsAnalytics.js')
+      expect(callInfo).to.have.property('lineNumber', '56')
+      expect(callInfo).to.have.property('columnNumber', '28')
+      expect(callInfo).to.have.property('functionName', 'superizeProperties')
+      expect(callInfo).to.have.property('className', 'SensorsAnalytics')
     })
 
     it('should parse anonymouse method call', () => {
-      const callInfo = parseCallInfo('   at Actor.<anonymous> (/home/gbusey/actors.js:400:8)')
+      const callInfo = parseCallInfo('     at Context.<anonymous> (SensorsAnalyticsSpec.js:17:8)')
 
-      expect(callInfo).to.have.property('fileName', '/home/gbusey/actors.js')
-      expect(callInfo).to.have.property('lineNumber', '400')
+      expect(callInfo).to.have.property('fileName', 'SensorsAnalyticsSpec.js')
+      expect(callInfo).to.have.property('lineNumber', '17')
       expect(callInfo).to.have.property('columnNumber', '8')
       expect(callInfo).to.have.property('functionName', '<anonymous>')
-      expect(callInfo).to.have.property('className', 'Actor')
+      expect(callInfo).to.have.property('className', 'Context')
+    })
+
+    it('should parse native call', () => {
+      const callInfo = parseCallInfo('    at undefined.next (native)')
+
+      expect(callInfo).to.have.property('fileName', 'native')
+      expect(callInfo).to.have.property('lineNumber').that.is.undefined
+      expect(callInfo).to.have.property('columnNumber').that.is.undefined
+      expect(callInfo).to.have.property('functionName', 'next')
+      expect(callInfo).to.have.property('className', 'undefined')
     })
   })
 })
