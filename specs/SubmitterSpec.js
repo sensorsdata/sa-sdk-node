@@ -89,7 +89,7 @@ describe('Submitter', () => {
     })
 
     it('should submit single data', async () => {
-      const value = await submitter.onNext({ event: 'event' })
+      await submitter.onNext({ event: 'event' })
       expect(fetchMock.called(pattern)).to.be.true
     })
 

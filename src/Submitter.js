@@ -6,6 +6,8 @@ import zlib from 'mz/zlib'
 import encodeForm from 'form-urlencoded'
 import createDebug from 'debug'
 
+import TaskQueue from './TaskQueue'
+
 const debug = createDebug('sa:Submitter')
 
 const DEFAULT_TIMEOUT = 10000
@@ -42,6 +44,14 @@ class Submitter extends Subject {
     }
 
     debug('Config: %o', this)
+
+    this.dataQueue = new TaskQueue({
+      consumeData: ::this.submit,
+      onSucceeded: () => {
+        super.next(null)
+      },
+      onError: ::this.onError,
+    })
   }
 
   catch(callback) {
@@ -52,7 +62,7 @@ class Submitter extends Subject {
     )
   }
 
-  async onNext(data) {
+  onNext(data) {
     debug('onNext(%o)', data)
 
     if (data == null) {
@@ -67,14 +77,7 @@ class Submitter extends Subject {
       return
     }
 
-    try {
-      await this.submit(messages)
-      debug('Submit succeeded')
-      super.onNext(null)
-    } catch (ex) {
-      debug('Submit error: %o', ex)
-      this.onError(ex)
-    }
+    this.dataQueue.enqueueAndStart(messages)
   }
 
   async submit(messages) {
