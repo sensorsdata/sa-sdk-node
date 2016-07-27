@@ -111,7 +111,7 @@ describe('translators', () => {
       const properties = extractCodeProperties(2)
 
       expect(properties).to.have.property('$libMethod', 'code')
-      expect(properties).to.have.property('$libDetail').that.match(/Context##it##translatorsSpec\.js##\d+,\d+/)
+      expect(properties).to.have.property('$libDetail').that.match(/Context##(it|<anonymous>)##translatorsSpec\.js##\d+,\d+/)
     })
 
     describe('parseCallInfo', () => {
