@@ -31,6 +31,10 @@ class ObservableMonitor {
     return this.notifications.map(notification => notification.value)
   }
 
+  async firstValue() {
+    return (await this.values())[0]
+  }
+
   async errors() {
     await this.toNotifications()
 

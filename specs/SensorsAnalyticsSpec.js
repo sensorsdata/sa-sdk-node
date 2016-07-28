@@ -1,4 +1,5 @@
 import SensorsAnalytics from '../src/SensorsAnalytics'
+import moment from 'moment'
 
 describe('SensorsAnalytics', () => {
   const distinctId = 'user-id'
@@ -54,5 +55,55 @@ describe('SensorsAnalytics', () => {
     const notifications = await monitor.toNotifications()
     const values = notifications[0].value.map((v) => v.event)
     expect(values).to.deep.equal(['a', 'b', 'c'])
+  })
+
+  describe.only('Override event time', () => {
+    let monitor
+
+    const event = 'testEvent'
+
+    beforeEach(() => {
+      monitor = monitorRx(sa)
+    })
+
+    it('should able to use number as $time', async () => {
+      sa.track(distinctId, event, { $time: 1469808000000 })
+
+      sa.close()
+
+      const message = await monitor.firstValue()
+
+      expect(message.time).to.equal(1469808000000)
+    })
+
+    it('should able to use string as $time', async () => {
+      sa.track(distinctId, event, { $time: '2016-07-30T00:00:00+08:00' })
+
+      sa.close()
+
+      const message = await monitor.firstValue()
+
+      expect(message.time).to.equal(1469808000000)
+    })
+
+    it('should able to use Date as $time', async () => {
+      sa.track(distinctId, event, { $time: new Date('2016-07-30T00:00:00+08:00') })
+
+      sa.close()
+
+      const message = await monitor.firstValue()
+
+      expect(message.time).to.equal(1469808000000)
+    })
+
+    it('should able to use moment as $time', async () => {
+      sa.track(distinctId, event, { $time: moment('2016-07-30T00:00:00+08:00') })
+
+      sa.close()
+
+      const message = await monitor.firstValue()
+
+      expect(message.time).to.equal(1469808000000)
+    })
   })
 })
