@@ -41,6 +41,10 @@ class ObservableMonitor {
     return this.notifications.map(notification => notification.error)
   }
 
+  async firstError() {
+    return (await this.errors())[0]
+  }
+
   async pluckValues(key) {
     await this.toNotifications()
 

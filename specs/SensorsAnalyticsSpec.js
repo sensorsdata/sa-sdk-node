@@ -1,6 +1,8 @@
 import SensorsAnalytics from '../src/SensorsAnalytics'
 import moment from 'moment'
 
+const TIME_DELTA = 500
+
 describe('SensorsAnalytics', () => {
   const distinctId = 'user-id'
 
@@ -66,6 +68,15 @@ describe('SensorsAnalytics', () => {
       monitor = monitorRx(sa)
     })
 
+    it('should generate tiem automatically', async () => {
+      const now = Date.now()
+      sa.track(distinctId, event)
+      sa.close()
+
+      const message = await monitor.firstValue()
+      expect(message.time).to.be.closeTo(now, TIME_DELTA)
+    })
+
     it('should able to use number as $time', async () => {
       sa.track(distinctId, event, { $time: 1469808000000 })
 
@@ -104,6 +115,12 @@ describe('SensorsAnalytics', () => {
       const message = await monitor.firstValue()
 
       expect(message.time).to.equal(1469808000000)
+    })
+
+    it('should yield if $time is invalid type', async () => {
+      expect(() =>
+        sa.track(distinctId, event, { $time: { type: 'invalid date type' } })
+      ).to.throw(Error, /Invalid time object/)
     })
   })
 })
