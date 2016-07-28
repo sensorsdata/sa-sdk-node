@@ -57,7 +57,7 @@ describe('SensorsAnalytics', () => {
     expect(values).to.deep.equal(['a', 'b', 'c'])
   })
 
-  describe.only('Override event time', () => {
+  describe('Override event time', () => {
     let monitor
 
     const event = 'testEvent'

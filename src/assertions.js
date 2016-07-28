@@ -35,9 +35,34 @@ export function checkPattern(value, name = 'value') {
   return value
 }
 
+export function checkDateTimeValueType(key, value) {
+  const type = R.type(value)
+
+  switch (type) {
+    case 'Number':
+    case 'String':
+    case 'Date':
+      return
+    case 'Object':
+      if (typeof value.toDate === 'function') {
+        return
+      }
+      throw new Error('Invalid time object')
+    default:
+      throw new Error('Invalid time object')
+  }
+}
+
 export function checkValueType(key) {
   debug('checkValyeType: this[%s]', key)
+
   const value = this[key]
+
+  if (key === '$time') { // Bypass normal check
+    checkDateTimeValueType(key, value)
+    return
+  }
+
   switch (R.type(value)) {
     case 'Number':
     case 'String':
