@@ -1,3 +1,6 @@
+THIS REPOSITORY IS NOT MAINTAINED ANY LONGER.
+THE MAINTAINANCE IS MOVED TO OFFICIAL REPO: https://github.com/sensorsdata/sa-sdk-node
+
 Sensors Analytics  [![NPM version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Dependency Status][depstat-image]][depstat-url]
 ==============================
 
