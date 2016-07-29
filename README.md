@@ -121,7 +121,10 @@ const sa = new SensorsAnalytics()
 
 const submitter = sa.submitTo({ url, gzip: true, mode: 'track', timeout: 10 * 1000 })
 // gzip: whether enable gzip, default to true
-// mode: could be 'track' (production use), 'debug' (diagnosis data), 'dryRun' (diagnosis with no data recorded), default to track
+// mode: could be 'track' (production use), 'debug' (diagnosis data), 'dryRun' (diagnosis with no data recorded),
+//       also supports the values that aligned to other SDKs: debug_off, debug_and_track and debug_only,
+//       default to track
+// mode:
 // timeout: Http timeout in ms, default to 10s
 ```
 

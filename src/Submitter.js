@@ -15,6 +15,10 @@ const MODES = {
   track: { debug: false, dryRun: false },
   debug: { debug: true, dryRun: false },
   dryRun: { debug: true, dryRun: true },
+
+  debug_off: { debug: false, dryRun: false },
+  debug_and_track: { debug: true, dryRun: false },
+  debug_only: { debug: true, dryRun: true },
 }
 
 class Submitter extends Subject {
