@@ -29,6 +29,10 @@ describe('translators', () => {
         expect(pascal2Snake(null)).to.be.null
         expect(pascal2Snake(undefined)).to.be.undefined
       })
+
+      it('should not escape $SignUp', async () => {
+        expect(pascal2Snake('$SignUp')).to.equal('$SignUp')
+      })
     })
 
     describe('translateKeys', () => {

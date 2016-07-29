@@ -1,5 +1,6 @@
 import R from 'ramda'
 import { Subject } from 'rx'
+
 import {
   pascal2Snake,
   snakenizeKeys,
@@ -17,11 +18,10 @@ import {
   checkValueIsNumber,
   checkValueIsStringArray,
 } from './assertions'
+import Submitter from './Submitter'
 
 import createDebug from 'debug'
 const debug = createDebug('sa:SensorsAnalytics')
-
-import Submitter from './Submitter'
 
 const SDK_PROPERTIES = {
   $lib: 'Node',
@@ -77,10 +77,6 @@ class SensorsAnalytics extends Subject {
 
     const properties = this.superizeProperties(eventProperties, 4)
 
-    // $SignUp will be converted into $_sign_up
-    // Comfirmed with SA guys, which doesn't matter
-    // If it does matters, it can escaped with Symbol instead of string
-    // By making pascal2Snake ignore Symbol
     this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties })
   }
 
