@@ -52,7 +52,7 @@ class Submitter extends Subject {
     this.dataQueue = new TaskQueue({
       consumeData: ::this.submit,
       onSucceeded: () => {
-        super.next(null)
+        super.onNext(null)
       },
       onError: ::this.onError,
     })
