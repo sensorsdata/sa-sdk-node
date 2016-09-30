@@ -8,8 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/timnew/sa-sdk-node.git"
+    "url": "https://github.com/sensorsdata/sa-sdk-node.git"
   },
+
   "keywords": [
     "sensor-data",
     "analytics",
@@ -20,12 +21,12 @@
   "author": "TimNew",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/timnew/sa-sdk-node/issues"
+    "url": "https://github.com/sensorsdata/sa-sdk-node/issues"
   },
   "engines": {
     "node": ">=4.0"
   },
-  "homepage": "https://github.com/timnew/sa-sdk-node#readme",
+  "homepage": "https://github.com/sensorsdata/sa-sdk-node#readme",
   "devDependencies": {
     "babel-core": "^6.7.4",
     "babel-eslint": "^6.0.0",
