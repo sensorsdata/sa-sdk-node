@@ -1,6 +1,6 @@
 {
   "name": "sa-sdk-node",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Sensor Data SDK for node.js",
   "main": "lib/index.js",
   "scripts": {
@@ -10,7 +10,6 @@
     "type": "git",
     "url": "https://github.com/sensorsdata/sa-sdk-node.git"
   },
-
   "keywords": [
     "sensor-data",
     "analytics",
