@@ -52,8 +52,10 @@ class SensorsAnalytics extends Subject {
 
   superizeProperties(properties = {}, callIndex) {
     const codeProperties = extractCodeProperties(callIndex)
-
-    return R.mergeAll([SDK_PROPERTIES, this.superProperties, codeProperties, translateUserAgent(properties)])
+    return {
+      properties: R.mergeAll([SDK_PROPERTIES, this.superProperties, translateUserAgent(properties)]),
+      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties]))
+    }
   }
 
   track(distinctId, event, eventProperties) {
@@ -63,9 +65,9 @@ class SensorsAnalytics extends Subject {
     checkPattern(event, 'event')
     checkProperties(eventProperties, checkValueType)
 
-    const properties = this.superizeProperties(eventProperties, 4)
+    const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track', { event, distinctId, properties })
+    this.internalTrack('track', { event, distinctId, properties: superize.properties ,lib: superize.lib})
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
@@ -75,9 +77,9 @@ class SensorsAnalytics extends Subject {
     checkExists(originalId, 'originalId')
     checkProperties(eventProperties, checkValueType)
 
-    const properties = this.superizeProperties(eventProperties, 4)
+    const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties })
+    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: superize.properties ,lib: superize.lib })
   }
 
   profileSet(distinctId, properties) {
@@ -85,6 +87,10 @@ class SensorsAnalytics extends Subject {
 
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
+
+    if (properties.hasOwnProperty('$app_version')) {
+      delete properties.$app_version;
+    }
 
     this.internalTrack('profile_set', { distinctId, properties })
   }
@@ -127,14 +133,15 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('profile_unset', { distinctId, properties })
   }
 
-  internalTrack(type, { event, distinctId, originalId, properties }) {
+  internalTrack(type, { event, distinctId, originalId, properties, lib }) {
     const envelope = snakenizeKeys({
       type,
-      event: pascal2Snake(event),
+      event,
       time: extractTimestamp(properties),
       distinctId,
       originalId,
-      properties: checkProperties(snakenizeKeys(properties), checkPattern),
+      properties: checkProperties(properties, checkPattern),
+      lib
     })
 
     debug('envelope: %j', envelope)
