@@ -54,7 +54,7 @@ class SensorsAnalytics extends Subject {
     const codeProperties = extractCodeProperties(callIndex)
     return {
       properties: R.mergeAll([SDK_PROPERTIES, this.superProperties, translateUserAgent(properties)]),
-      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties]))
+      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version}]))
     }
   }
 
