@@ -69,6 +69,7 @@ export function checkValueType(key) {
     case 'Boolean':
     case 'Symbol':
     case 'Array':
+    case 'Date':
       return
     default:
       throw new Error(`Property ${key} is invalid: ${value}`)
