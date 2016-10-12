@@ -65,6 +65,7 @@
     "debug": "^2.2.0",
     "detector": "^2.4.5",
     "form-urlencoded": "^1.2.1",
+    "moment": "^2.15.1",
     "mz": "^2.4.0",
     "node-fetch": "^1.4.1",
     "ramda": "^0.21.0",
