@@ -35,3 +35,4 @@ node_modules
 sample.rb
 
 .idea/*
+.DS_Store

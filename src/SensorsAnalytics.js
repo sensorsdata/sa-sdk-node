@@ -31,6 +31,7 @@ const SDK_PROPERTIES = {
 class SensorsAnalytics extends Subject {
   constructor() {
     super()
+    this.enableReNameOption()
     this.clearSuperProperties()
   }
 
@@ -50,11 +51,28 @@ class SensorsAnalytics extends Subject {
     return this.superProperties
   }
 
+  disableReNameOption() {
+    debug('resetReNameOption()')
+
+    this.allowReNameOption = false
+
+    return this.allowReNameOption
+  }
+
+  enableReNameOption() {
+    debug('resetReNameOption()')
+
+    this.allowReNameOption = true
+
+    return this.allowReNameOption
+  }
+
   superizeProperties(properties = {}, callIndex) {
+    // 合并公共属性
     const codeProperties = extractCodeProperties(callIndex)
     return {
       properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), this.superProperties, translateUserAgent(properties)]),
-      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version}]))
+      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version || this.superProperties.$appVersion || properties.$app_version || properties.$appVersion}]))
     }
   }
 
@@ -88,11 +106,17 @@ class SensorsAnalytics extends Subject {
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
 
-    if (properties.hasOwnProperty('$app_version')) {
-      delete properties.$app_version;
+    const superize = this.superizeProperties(properties, 4)
+
+    if (superize.properties.hasOwnProperty('$app_version')) {
+      delete superize.properties.$app_version
     }
 
-    this.internalTrack('profile_set', { distinctId, properties })
+    if (superize.properties.hasOwnProperty('$appVersion')) {
+      delete superize.properties.$appVersion
+    }
+
+    this.internalTrack('profile_set', { distinctId, properties: superize.properties, lib: superize.lib })
   }
 
   profileSetOnce(distinctId, properties) {
@@ -101,7 +125,17 @@ class SensorsAnalytics extends Subject {
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
 
-    this.internalTrack('profile_set_once', { distinctId, properties })
+    const superize = this.superizeProperties(properties, 4)
+
+    if (superize.properties.hasOwnProperty('$app_version')) {
+      delete superize.properties.$app_version
+    }
+
+    if (superize.properties.hasOwnProperty('$appVersion')) {
+      delete superize.properties.$appVersion
+    }
+
+    this.internalTrack('profile_set_once', { distinctId, properties: superize.properties, lib: superize.lib })
   }
 
   profileIncrement(distinctId, properties) {
@@ -134,6 +168,11 @@ class SensorsAnalytics extends Subject {
   }
 
   internalTrack(type, { event, distinctId, originalId, properties, lib }) {
+
+    if (this.allowReNameOption) {
+      properties = snakenizeKeys(properties)
+      event = pascal2Snake(event)
+    }
     const envelope = snakenizeKeys({
       type,
       event,

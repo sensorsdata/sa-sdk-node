@@ -12,6 +12,33 @@ Install using [npm][npm-url].
 
     $ npm install sa-sdk-node --save
 
+##Attention
+
+In the latest version(v1.0.8), we added a option named `allowReNameOption` valued `true` by default.
+In this case, we change the property value and the keys to snake style with '_'. 
+eg:
+```js
+// when 'allowReNameOption' is true
+sa.track('user-id', 'userHappy', {
+  '$appVersion': '1.0.0',
+  'orderId': '123'
+})
+
+// then we get the data
+{
+...
+'event': 'user_happy'
+'properties': {
+  '$app_version': '1.0.0',
+  'order_id': '123'
+}
+...
+}
+```
+
+You can use `sa.disableReNameOption()` to set `allowReNameOption` to be `false`.
+In this case, when you set default property, you must use like `$app_version`, `$appVersion` style could be error. Refer to [Data schema](https://sensorsdata.cn/manual/data_schema.html) for more detail.
+Property name like `orderId` will be kept.
 ## Usage
 
 ### Basic Usage

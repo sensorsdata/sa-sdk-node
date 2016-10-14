@@ -25,6 +25,33 @@ describe('SensorsAnalytics', () => {
     await expect(monitor.pluckValues('event')).to.eventually.have.members(['a', 'b', 'c', 'd'])
   })
 
+  it('should snakenizeKeys property name by default', async () => {
+    const monitor = monitorRx(sa);
+
+    expect(sa.allowReNameOption).to.equal(true)
+    sa.track(distinctId, 'a', {
+      '$appVersion': '1.0.8'
+    })
+    sa.registerSuperProperties({
+      '$appVersion': '1.0.8'
+    })
+    sa.profileSet(distinctId, {
+      'test': 'test'
+    })
+    monitor.complete(sa)
+
+    const values = await monitor.values()
+    console.log(values)
+
+    expect(values[0].lib).to.have.property('$app_version', '1.0.8')
+    expect(values[0].properties).to.have.property('$app_version', '1.0.8')
+
+    expect(values[1].lib).to.have.property('$app_version', '1.0.8')
+    expect(values[1].properties.hasOwnProperty('$app_version')).to.be.false
+    sa.disableReNameOption()
+    expect(sa.allowReNameOption).to.equal(false)
+  })
+
   it('should batch compose event', async () => {
     const monitor = monitorRx(sa.inBatch({ count: 2, timeSpan: 5000 }))
 
