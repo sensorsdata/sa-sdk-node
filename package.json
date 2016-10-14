@@ -1,6 +1,6 @@
 {
   "name": "sa-sdk-node",
-  "version": "1.0.2",
+  "version": "1.0.8",
   "description": "Sensor Data SDK for node.js",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/timnew/sa-sdk-node.git"
+    "url": "https://github.com/sensorsdata/sa-sdk-node.git"
   },
   "keywords": [
     "sensor-data",
@@ -20,12 +20,12 @@
   "author": "TimNew",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/timnew/sa-sdk-node/issues"
+    "url": "https://github.com/sensorsdata/sa-sdk-node/issues"
   },
   "engines": {
     "node": ">=4.0"
   },
-  "homepage": "https://github.com/timnew/sa-sdk-node#readme",
+  "homepage": "https://github.com/sensorsdata/sa-sdk-node#readme",
   "devDependencies": {
     "babel-core": "^6.7.4",
     "babel-eslint": "^6.0.0",
@@ -65,6 +65,7 @@
     "debug": "^2.2.0",
     "detector": "^2.4.5",
     "form-urlencoded": "^1.2.1",
+    "moment": "^2.15.1",
     "mz": "^2.4.0",
     "node-fetch": "^1.4.1",
     "ramda": "^0.21.0",

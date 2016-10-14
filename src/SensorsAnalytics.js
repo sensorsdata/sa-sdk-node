@@ -31,6 +31,7 @@ const SDK_PROPERTIES = {
 class SensorsAnalytics extends Subject {
   constructor() {
     super()
+    this.enableReNameOption()
     this.clearSuperProperties()
   }
 
@@ -50,10 +51,29 @@ class SensorsAnalytics extends Subject {
     return this.superProperties
   }
 
-  superizeProperties(properties = {}, callIndex) {
-    const codeProperties = extractCodeProperties(callIndex)
+  disableReNameOption() {
+    debug('resetReNameOption()')
 
-    return R.mergeAll([SDK_PROPERTIES, this.superProperties, codeProperties, translateUserAgent(properties)])
+    this.allowReNameOption = false
+
+    return this.allowReNameOption
+  }
+
+  enableReNameOption() {
+    debug('resetReNameOption()')
+
+    this.allowReNameOption = true
+
+    return this.allowReNameOption
+  }
+
+  superizeProperties(properties = {}, callIndex) {
+    // 合并公共属性
+    const codeProperties = extractCodeProperties(callIndex)
+    return {
+      properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), this.superProperties, translateUserAgent(properties)]),
+      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version || this.superProperties.$appVersion || properties.$app_version || properties.$appVersion}]))
+    }
   }
 
   track(distinctId, event, eventProperties) {
@@ -63,9 +83,9 @@ class SensorsAnalytics extends Subject {
     checkPattern(event, 'event')
     checkProperties(eventProperties, checkValueType)
 
-    const properties = this.superizeProperties(eventProperties, 4)
+    const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track', { event, distinctId, properties })
+    this.internalTrack('track', { event, distinctId, properties: superize.properties ,lib: superize.lib})
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
@@ -75,9 +95,9 @@ class SensorsAnalytics extends Subject {
     checkExists(originalId, 'originalId')
     checkProperties(eventProperties, checkValueType)
 
-    const properties = this.superizeProperties(eventProperties, 4)
+    const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties })
+    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: superize.properties ,lib: superize.lib })
   }
 
   profileSet(distinctId, properties) {
@@ -86,7 +106,17 @@ class SensorsAnalytics extends Subject {
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
 
-    this.internalTrack('profile_set', { distinctId, properties })
+    const superize = this.superizeProperties(properties, 4)
+
+    if (superize.properties.hasOwnProperty('$app_version')) {
+      delete superize.properties.$app_version
+    }
+
+    if (superize.properties.hasOwnProperty('$appVersion')) {
+      delete superize.properties.$appVersion
+    }
+
+    this.internalTrack('profile_set', { distinctId, properties: superize.properties, lib: superize.lib })
   }
 
   profileSetOnce(distinctId, properties) {
@@ -95,7 +125,17 @@ class SensorsAnalytics extends Subject {
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
 
-    this.internalTrack('profile_set_once', { distinctId, properties })
+    const superize = this.superizeProperties(properties, 4)
+
+    if (superize.properties.hasOwnProperty('$app_version')) {
+      delete superize.properties.$app_version
+    }
+
+    if (superize.properties.hasOwnProperty('$appVersion')) {
+      delete superize.properties.$appVersion
+    }
+
+    this.internalTrack('profile_set_once', { distinctId, properties: superize.properties, lib: superize.lib })
   }
 
   profileIncrement(distinctId, properties) {
@@ -127,14 +167,20 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('profile_unset', { distinctId, properties })
   }
 
-  internalTrack(type, { event, distinctId, originalId, properties }) {
+  internalTrack(type, { event, distinctId, originalId, properties, lib }) {
+
+    if (this.allowReNameOption) {
+      properties = snakenizeKeys(properties)
+      event = pascal2Snake(event)
+    }
     const envelope = snakenizeKeys({
       type,
-      event: pascal2Snake(event),
+      event,
       time: extractTimestamp(properties),
       distinctId,
       originalId,
-      properties: checkProperties(snakenizeKeys(properties), checkPattern),
+      properties: checkProperties(properties, checkPattern),
+      lib
     })
 
     debug('envelope: %j', envelope)

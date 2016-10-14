@@ -1,5 +1,6 @@
 import R from 'ramda'
 import createDebug from 'debug'
+import moment from 'moment'
 
 const debug = createDebug('sa:assertions')
 
@@ -69,6 +70,9 @@ export function checkValueType(key) {
     case 'Boolean':
     case 'Symbol':
     case 'Array':
+      return
+    case 'Date':
+      this[key] = moment(value).format('YYYY-MM-DD HH:mm:ss.SSS');
       return
     default:
       throw new Error(`Property ${key} is invalid: ${value}`)
