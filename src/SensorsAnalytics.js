@@ -71,7 +71,7 @@ class SensorsAnalytics extends Subject {
     // 合并公共属性
     const codeProperties = extractCodeProperties(callIndex)
     return {
-      properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), this.superProperties, translateUserAgent(properties)]),
+      properties: R.mergeAll([this.superProperties, translateUserAgent(properties)]),
       lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version || this.superProperties.$appVersion || properties.$app_version || properties.$appVersion}]))
     }
   }
@@ -85,7 +85,7 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track', { event, distinctId, properties: superize.properties ,lib: superize.lib})
+    this.internalTrack('track', { event, distinctId, properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), superize.properties]),lib: superize.lib})
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
@@ -97,7 +97,7 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: superize.properties ,lib: superize.lib })
+    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), superize.properties]) ,lib: superize.lib })
   }
 
   profileSet(distinctId, properties) {
