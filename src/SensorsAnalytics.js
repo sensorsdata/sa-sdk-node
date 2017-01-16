@@ -19,6 +19,7 @@ import {
   checkValueIsStringArray,
 } from './assertions'
 import Submitter from './Submitter'
+import LoggingConsumer from './LoggingConsumer'
 
 import createDebug from 'debug'
 const debug = createDebug('sa:SensorsAnalytics')
@@ -31,8 +32,18 @@ const SDK_PROPERTIES = {
 class SensorsAnalytics extends Subject {
   constructor() {
     super()
+    this.logger = null
+    this.loggingConsumer = false;
     this.enableReNameOption()
     this.clearSuperProperties()
+  }
+
+  disableLoggingConsumer() {
+    this.loggingConsumer = false
+  }
+
+  enableLoggingConsumer() {
+    this.loggingConsumer = true
   }
 
   registerSuperProperties(values = {}) {
@@ -185,7 +196,11 @@ class SensorsAnalytics extends Subject {
 
     debug('envelope: %j', envelope)
 
-    this.onNext(envelope)
+    if (this.loggingConsumer) {
+      this.logger.send(envelope)
+    } else {
+      this.onNext(envelope)
+    }
   }
 
   inBatch({ count, timeSpan }) {
@@ -216,8 +231,14 @@ class SensorsAnalytics extends Subject {
     return submitter
   }
 
+  initLoggingConsumer(path) {
+    this.enableLoggingConsumer();
+    this.logger = new LoggingConsumer(path);
+  }
+
   close() {
     this.onCompleted()
+    this.logger.close()
   }
 }
 
