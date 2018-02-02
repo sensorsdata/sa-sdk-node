@@ -231,9 +231,9 @@ class SensorsAnalytics extends Subject {
     return submitter
   }
 
-  initLoggingConsumer(path) {
+  initLoggingConsumer(path, pm2Mode) {
     this.enableLoggingConsumer();
-    this.logger = new LoggingConsumer(path);
+    this.logger = new LoggingConsumer(path, pm2Mode);
   }
 
   close() {
