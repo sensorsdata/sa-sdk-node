@@ -13,7 +13,7 @@ sa.registerSuperProperties({$app_version: '0.3.0', env: process.env.NODE_ENV || 
 
 
 module.exports = sa;
-let n = 10000;
+let n = 1000;
 while (n--) {
   sa.track('bsfjsfish', 'dsda');
 }

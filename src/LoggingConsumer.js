@@ -37,7 +37,6 @@ export default class LoggingConsumer {
     //   ],
     //   pm2: !!pm2Mode
     // });
-    fs.existsSync(filePath + this.filePrefix) || fs.mkdirSync(filePath + this.filePrefix)
     log4js.configure({
       appenders: {
         task: {
