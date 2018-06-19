@@ -19,6 +19,7 @@ import {
   checkValueIsStringArray,
 } from './assertions'
 import Submitter from './Submitter'
+import LoggingConsumer from './LoggingConsumer'
 
 import createDebug from 'debug'
 const debug = createDebug('sa:SensorsAnalytics')
@@ -31,8 +32,18 @@ const SDK_PROPERTIES = {
 class SensorsAnalytics extends Subject {
   constructor() {
     super()
+    this.logger = null
+    this.loggingConsumer = false;
     this.enableReNameOption()
     this.clearSuperProperties()
+  }
+
+  disableLoggingConsumer() {
+    this.loggingConsumer = false
+  }
+
+  enableLoggingConsumer() {
+    this.loggingConsumer = true
   }
 
   registerSuperProperties(values = {}) {
@@ -71,7 +82,7 @@ class SensorsAnalytics extends Subject {
     // 合并公共属性
     const codeProperties = extractCodeProperties(callIndex)
     return {
-      properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), this.superProperties, translateUserAgent(properties)]),
+      properties: R.mergeAll([this.superProperties, translateUserAgent(properties)]),
       lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version || this.superProperties.$appVersion || properties.$app_version || properties.$appVersion}]))
     }
   }
@@ -85,7 +96,7 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track', { event, distinctId, properties: superize.properties ,lib: superize.lib})
+    this.internalTrack('track', { event, distinctId, properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), superize.properties]),lib: superize.lib})
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
@@ -97,7 +108,7 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: superize.properties ,lib: superize.lib })
+    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), superize.properties]) ,lib: superize.lib })
   }
 
   profileSet(distinctId, properties) {
@@ -185,7 +196,11 @@ class SensorsAnalytics extends Subject {
 
     debug('envelope: %j', envelope)
 
-    this.onNext(envelope)
+    if (this.loggingConsumer) {
+      this.logger.send(envelope)
+    } else {
+      this.onNext(envelope)
+    }
   }
 
   inBatch({ count, timeSpan }) {
@@ -216,8 +231,14 @@ class SensorsAnalytics extends Subject {
     return submitter
   }
 
+  initLoggingConsumer(path, pm2Mode) {
+    this.enableLoggingConsumer();
+    this.logger = new LoggingConsumer(path, pm2Mode);
+  }
+
   close() {
     this.onCompleted()
+    this.logger.close()
   }
 }
 

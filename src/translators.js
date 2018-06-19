@@ -7,7 +7,8 @@ const debug = createDebug('sa:translators')
 const UPPER_CASE_LETTER = /([A-Z])/g
 
 export function pascal2Snake(text) {
-  if (text == null || text === '$SignUp') {
+  var reg = new RegExp('^[A-Z_]+$')
+  if (text == null || text === '$SignUp' || reg.test(text) ) {
     return text
   }
   return text.replace(UPPER_CASE_LETTER, (match, letter) => `_${letter.toLowerCase()}`)
