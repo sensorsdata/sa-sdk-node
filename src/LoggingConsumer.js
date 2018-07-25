@@ -21,22 +21,6 @@ export default class LoggingConsumer {
     //   throw new Error('file path error')
     // }
     var fileName = this.constructFilePath()
-    // log4js.configure({
-    //   "appenders": [
-    //     {
-    //       "type": "dateFile",
-    //       "filename": filePath + this.filePrefix,
-    //       "pattern": "yyyyMMdd",
-    //       alwaysIncludePattern: true,
-    //       "category": this.logName,
-    //       layout: {
-    //         type: 'pattern',
-    //         pattern: '%m'
-    //       }
-    //     }
-    //   ],
-    //   pm2: !!pm2Mode
-    // });
     log4js.configure({
       appenders: {
         task: {
@@ -64,7 +48,7 @@ export default class LoggingConsumer {
 
   send(msg) {
     try {
-      this.logger.info(serialize.serialize(msg))
+      this.logger.info(JSON.stringify(msg));
     } catch (e) {
       console.error(e);
       return;
