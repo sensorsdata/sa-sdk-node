@@ -2,9 +2,6 @@
  * Created by m1911 on 17/1/12.
  */
 import log4js from 'log4js'
-import moment from 'moment'
-import serialize from 'node-serialize'
-import fs from 'fs'
 
 export default class LoggingConsumer {
   constructor(filePath, pm2Mode) {
