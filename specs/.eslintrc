@@ -1,0 +1,15 @@
+{
+  "extends": "../.eslintrc",
+  "env": {
+    "mocha": true,
+    "node": true,
+  },
+  "rules": {
+    "no-unused-expressions": 0,
+  },
+  "globals": {
+    "expect": true,
+    "Sinon": true,
+    "monitorRx": true,
+  }
+}
