@@ -1,6 +1,7 @@
 import R from 'ramda'
 import { Subject } from 'rx'
 
+import createDebug from 'debug'
 import {
   pascal2Snake,
   snakenizeKeys,
@@ -21,7 +22,6 @@ import {
 import Submitter from './Submitter'
 import LoggingConsumer from './LoggingConsumer'
 
-import createDebug from 'debug'
 const debug = createDebug('sa:SensorsAnalytics')
 
 const SDK_PROPERTIES = {
@@ -33,7 +33,7 @@ class SensorsAnalytics extends Subject {
   constructor() {
     super()
     this.logger = null
-    this.loggingConsumer = false;
+    this.loggingConsumer = false
     this.enableReNameOption()
     this.clearSuperProperties()
   }
@@ -82,8 +82,23 @@ class SensorsAnalytics extends Subject {
     // 合并公共属性
     const codeProperties = extractCodeProperties(callIndex)
     return {
-      properties: R.mergeAll([this.superProperties, translateUserAgent(properties)]),
-      lib: snakenizeKeys(R.mergeAll([SDK_PROPERTIES, codeProperties, {'$app_version': this.superProperties.$app_version || this.superProperties.$appVersion || properties.$app_version || properties.$appVersion}]))
+      properties: R.mergeAll([
+        this.superProperties,
+        translateUserAgent(properties),
+      ]),
+      lib: snakenizeKeys(
+        R.mergeAll([
+          SDK_PROPERTIES,
+          codeProperties,
+          {
+            $app_version:
+              this.superProperties.$app_version
+              || this.superProperties.$appVersion
+              || properties.$app_version
+              || properties.$appVersion,
+          },
+        ])
+      ),
     }
   }
 
@@ -96,7 +111,15 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track', { event, distinctId, properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), superize.properties]),lib: superize.lib})
+    this.internalTrack('track', {
+      event,
+      distinctId,
+      properties: R.mergeAll([
+        snakenizeKeys(SDK_PROPERTIES),
+        superize.properties,
+      ]),
+      lib: superize.lib,
+    })
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
@@ -108,7 +131,16 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(eventProperties, 4)
 
-    this.internalTrack('track_signup', { event: '$SignUp', distinctId, originalId, properties: R.mergeAll([snakenizeKeys(SDK_PROPERTIES), superize.properties]) ,lib: superize.lib })
+    this.internalTrack('track_signup', {
+      event: '$SignUp',
+      distinctId,
+      originalId,
+      properties: R.mergeAll([
+        snakenizeKeys(SDK_PROPERTIES),
+        superize.properties,
+      ]),
+      lib: superize.lib,
+    })
   }
 
   profileSet(distinctId, properties) {
@@ -119,15 +151,22 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(properties, 4)
 
-    if (superize.properties.hasOwnProperty('$app_version')) {
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+    ) {
       delete superize.properties.$app_version
     }
-
-    if (superize.properties.hasOwnProperty('$appVersion')) {
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+    ) {
       delete superize.properties.$appVersion
     }
 
-    this.internalTrack('profile_set', { distinctId, properties: superize.properties, lib: superize.lib })
+    this.internalTrack('profile_set', {
+      distinctId,
+      properties: superize.properties,
+      lib: superize.lib,
+    })
   }
 
   profileSetOnce(distinctId, properties) {
@@ -138,15 +177,22 @@ class SensorsAnalytics extends Subject {
 
     const superize = this.superizeProperties(properties, 4)
 
-    if (superize.properties.hasOwnProperty('$app_version')) {
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+    ) {
       delete superize.properties.$app_version
     }
-
-    if (superize.properties.hasOwnProperty('$appVersion')) {
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+    ) {
       delete superize.properties.$appVersion
     }
 
-    this.internalTrack('profile_set_once', { distinctId, properties: superize.properties, lib: superize.lib })
+    this.internalTrack('profile_set_once', {
+      distinctId,
+      properties: superize.properties,
+      lib: superize.lib,
+    })
   }
 
   profileIncrement(distinctId, properties) {
@@ -178,8 +224,41 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('profile_unset', { distinctId, properties })
   }
 
-  internalTrack(type, { event, distinctId, originalId, properties, lib }) {
+  itemSet(itemType, itemId, properties) {
+    debug('itemSet(%j)', { itemType, itemId, properties })
+    checkProperties(properties, checkValueType)
+    const superize = this.superizeProperties(properties, 4)
+    this.internalTrack('item_set', {
+      itemType,
+      itemId,
+      properties: R.mergeAll([
+        snakenizeKeys(SDK_PROPERTIES),
+        superize.properties,
+      ]),
+      lib: superize.lib,
+    })
+  }
 
+  itemDelete(itemType, itemId) {
+    debug('itemDelete(%j)', { itemType, itemId })
+    const superize = this.superizeProperties({}, 4)
+    this.internalTrack('item_delete', {
+      itemType,
+      itemId,
+      properties: R.mergeAll([
+        snakenizeKeys(SDK_PROPERTIES),
+        superize.properties,
+      ]),
+      lib: superize.lib,
+    })
+  }
+
+  internalTrack(
+    type,
+    {
+      event, distinctId, originalId, itemType, itemId, properties, lib,
+    }
+  ) {
     if (this.allowReNameOption) {
       properties = snakenizeKeys(properties)
       event = pascal2Snake(event)
@@ -190,8 +269,10 @@ class SensorsAnalytics extends Subject {
       time: extractTimestamp(properties),
       distinctId,
       originalId,
+      itemType,
+      itemId,
       properties: checkProperties(properties, checkPattern),
-      lib
+      lib,
     })
 
     debug('envelope: %j', envelope)
@@ -204,17 +285,23 @@ class SensorsAnalytics extends Subject {
   }
 
   inBatch({ count, timeSpan }) {
-    const mode = `${count != null ? 'count' : ''}${timeSpan != null ? 'time' : ''}`
+    const mode = `${count != null ? 'count' : ''}${
+      timeSpan != null ? 'time' : ''
+    }`
 
     debug('inBatch(%j)', { count, timeSpan, mode })
 
     switch (mode) {
       case 'count':
-        return this.bufferWithCount(count).filter((events) => events.length > 0)
+        return this.bufferWithCount(count).filter(events => events.length > 0)
       case 'counttime':
-        return this.bufferWithTimeOrCount(timeSpan, count).filter((events) => events.length > 0)
+        return this.bufferWithTimeOrCount(timeSpan, count).filter(
+          events => events.length > 0
+        )
       case 'time':
-        return this.bufferWithTime(timeSpan).filter((events) => events.length > 0)
+        return this.bufferWithTime(timeSpan).filter(
+          events => events.length > 0
+        )
       default:
         return this
     }
@@ -232,8 +319,8 @@ class SensorsAnalytics extends Subject {
   }
 
   initLoggingConsumer(path, pm2Mode) {
-    this.enableLoggingConsumer();
-    this.logger = new LoggingConsumer(path, pm2Mode);
+    this.enableLoggingConsumer()
+    this.logger = new LoggingConsumer(path, pm2Mode)
   }
 
   close() {

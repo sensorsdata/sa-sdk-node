@@ -1,37 +1,48 @@
 import gulp from 'gulp'
-import git from 'gulp-git'
-import bump from 'gulp-bump'
-import tagVersion from 'gulp-tag-version'
 import babel from 'gulp-babel'
-import start from 'gulp-start-process'
+import shell from 'gulp-shell'
 
-gulp.task('default', ['spec'])
+const presets = [['@babel/env']]
+module.exports = { presets }
+gulp.task('test', (done) => {
+  console.log('It works!')
+  done()
+})
 
-;['major', 'minor', 'patch'].forEach((type) => {
-  gulp.task(`bump:${type}`, ['build'], () =>
-    gulp.src('./package.json')
-    .pipe(bump({ type }))
-    .pipe(gulp.dest('./'))
-    .pipe(git.commit('bumps version'))
-    .pipe(tagVersion())
+gulp.task('babel', () => gulp
+  .src('src/*.js')
+  .pipe(
+    babel({
+      presets: ['@babel/preset-env'],
+    })
   )
+  .pipe(gulp.dest('dist')))
+
+gulp.task('spec:ut', () => gulp
+  .src('*.js', { read: false })
+  .pipe(
+    shell([
+      './node_modules/.bin/mocha --harmony --opts mocha.opts "specs/**/*Spec.js"',
+    ])
+  ))
+
+gulp.task('spec', gulp.parallel('spec:ut'))
+
+gulp.task('watch', () => {
+  gulp.watch('src/*.js', gulp.series('babel'))
 })
-gulp.task('bump', ['bump:patch'])
 
-gulp.task('spec', ['spec:ut'])
+gulp.task('spec:smoke', () => gulp
+  .src('*.js', { read: false })
+  .pipe(
+    shell([
+      'DEBUG=sa:* ./node_modules/.bin/mocha --harmony --opts mocha.opts "specs/smokingTest.js"',
+    ])
+  ))
 
-gulp.task('spec:ut', (done) => {
-  start('./node_modules/.bin/mocha --harmony --opts mocha.opts "specs/**/*Spec.js"', done)
-})
+gulp.task('build:babel', () => gulp
+  .src('src/*.js')
+  .pipe(babel())
+  .pipe(gulp.dest('lib')))
 
-gulp.task('spec:smoke', (done) => {
-  start('DEBUG=sa:* ./node_modules/.bin/mocha --harmony --opts mocha.opts "specs/smokingTest.js"', done)
-})
-
-gulp.task('build', ['build:babel'])
-
-gulp.task('build:babel', () =>
-  gulp.src('src/*.js')
-		.pipe(babel())
-		.pipe(gulp.dest('lib'))
-)
+gulp.task('build', gulp.parallel('build:babel'))

@@ -9,7 +9,7 @@ const KEY_PATTERN = /^((?!^distinct_id$|^original_id$|^time$|^properties$|^id$|^
 export function checkExists(value, name = 'value') {
   debug('checkExists: %s => %j', name, value)
 
-  if (typeof(value) !== 'string') {
+  if (typeof (value) !== 'string') {
     throw new Error(`${name} must be a string`)
   }
 
@@ -72,7 +72,7 @@ export function checkValueType(key) {
     case 'Array':
       return
     case 'Date':
-      this[key] = moment(value).format('YYYY-MM-DD HH:mm:ss.SSS');
+      this[key] = moment(value).format('YYYY-MM-DD HH:mm:ss.SSS')
       return
     default:
       throw new Error(`Property ${key} is invalid: ${value}`)

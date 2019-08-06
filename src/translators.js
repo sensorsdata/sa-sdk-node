@@ -2,13 +2,14 @@ import R from 'ramda'
 import detector from 'detector'
 
 import createDebug from 'debug'
+
 const debug = createDebug('sa:translators')
 
 const UPPER_CASE_LETTER = /([A-Z])/g
 
 export function pascal2Snake(text) {
-  var reg = new RegExp('^[A-Z_]+$')
-  if (text == null || text === '$SignUp' || reg.test(text) ) {
+  const reg = new RegExp('^[A-Z_]+$')
+  if (text == null || text === '$SignUp' || reg.test(text)) {
     return text
   }
   return text.replace(UPPER_CASE_LETTER, (match, letter) => `_${letter.toLowerCase()}`)
@@ -88,7 +89,9 @@ export function extractCodeProperties(callerIndex) {
 
   if (callInfo != null) {
     debug('Call info: %j', callInfo)
-    const { className, functionName, fileName, lineNumber, columnNumber } = callInfo
+    const {
+      className, functionName, fileName, lineNumber, columnNumber,
+    } = callInfo
     codeProperties.$libDetail = `${className}##${functionName}##${fileName}##${lineNumber},${columnNumber}`
   } else {
     debug('Call info not parsed')
