@@ -77,7 +77,6 @@ export function parseCallInfo(text) {
 }
 export function extractCodeProperties(callerIndex) {
   const codeProperties = {
-    _track_id: parseInt(Math.random() * (9999999999 - 999999999 + 1) + 999999999, 10),
     $libMethod: 'code',
   }
 

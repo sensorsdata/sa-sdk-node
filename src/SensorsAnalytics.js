@@ -264,6 +264,7 @@ class SensorsAnalytics extends Subject {
       event = pascal2Snake(event)
     }
     const envelope = snakenizeKeys({
+      _track_id: parseInt(Math.random() * (9999999999 - 999999999 + 1) + 999999999, 10),
       type,
       event,
       time: extractTimestamp(properties),
