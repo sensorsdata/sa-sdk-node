@@ -2,66 +2,61 @@
  * Created by m1911 on 17/1/12.
  */
 import log4js from 'log4js'
-import moment from 'moment'
-import serialize from 'node-serialize'
-import fs from 'fs'
+// import moment from 'moment'
+// import serialize from 'node-serialize'
+// import fs from 'fs'
 
 export default class LoggingConsumer {
   constructor(filePath, pm2Mode) {
     this.currentFileName = null
     this.logger = null
-    this.logName = "SensorsData.Analytics.LoggingConsumer"
-    this.filePrefix = "/service.log.";
+    this.logName = 'SensorsData.Analytics.LoggingConsumer'
+    this.filePrefix = '/service.log.'
     this.initLoggingConsumer(filePath, pm2Mode)
   }
 
   initLoggingConsumer(filePath, pm2Mode) {
-    var reg = new RegExp('/^\/([/w]+\/?)+$/i');
+    // const reg = new RegExp('/^/([/w]+/?)+$/i')
     // if (!reg.exec(filePath)) {
     //   throw new Error('file path error')
     // }
-    var fileName = this.constructFilePath()
+    // const fileName = this.constructFilePath()
     log4js.configure({
       appenders: {
         task: {
-          "type": "dateFile",
-          "filename": filePath + this.filePrefix,
-          "pattern": "yyyyMMdd",
+          type: 'dateFile',
+          filename: filePath + this.filePrefix,
+          pattern: 'yyyyMMdd',
           alwaysIncludePattern: true,
           layout: {
             type: 'pattern',
-            pattern: '%m'
-          }
-        }
+            pattern: '%m',
+          },
+        },
       },
       categories: {
-        default: { appenders: [ 'task' ], level: 'info' }
+        default: { appenders: ['task'], level: 'info' },
       },
-      pm2: !!pm2Mode
+      pm2: !!pm2Mode,
     })
     this.logger = log4js.getLogger(this.logName)
   }
 
-  doFlush() {
-
-  }
+  doFlush() {}
 
   send(msg) {
     try {
-      this.logger.info(JSON.stringify(msg));
+      this.logger.info(JSON.stringify(msg))
     } catch (e) {
-      console.error(e);
-      return;
+      console.error(e)
     }
   }
 
   close() {
-    log4js.shutdown(function () {
-
-    })
+    log4js.shutdown(() => {})
   }
 
   constructFilePath() {
-    return this.filePrefix;
+    return this.filePrefix
   }
 }
