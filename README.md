@@ -282,7 +282,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-**禁止一切基于神策数据 Java 开源 SDK 的所有商业活动！**
+**禁止一切基于神策数据 Node 开源 SDK 的所有商业活动！**
+
+---
 
 [![NPM downloads][npm-downloads]][npm-url]
 
