@@ -26,7 +26,9 @@ class Submitter extends Subject {
     return urlUtil.format(R.merge(urlUtil.parse(url), { pathname: '/debug' }))
   }
 
-  constructor({ url, gzip = true, mode = 'track', timeout = DEFAULT_TIMEOUT }) {
+  constructor({
+    url, gzip = true, mode = 'track', timeout = DEFAULT_TIMEOUT,
+  }) {
     super()
 
     if (typeof arguments[0] === 'string') { // eslint-disable-line prefer-rest-params
@@ -104,7 +106,9 @@ class Submitter extends Subject {
     debug('Body: %o', body)
 
     debug('Posting...')
-    const response = await fetch(this.url, { method: 'POST', headers, body, timeout: this.timeout })
+    const response = await fetch(this.url, {
+      method: 'POST', headers, body, timeout: this.timeout,
+    })
     debug('Post complete')
 
     if (response.ok) {
