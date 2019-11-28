@@ -6,7 +6,7 @@ const SensorsdataAnanlytics = require('../lib/SensorsAnalytics').default
 const sa = new SensorsdataAnanlytics()
 
 const URL = 'http://127.0.0.1:8106/sa?project=default'
-sa.initLoggingConsumer(__dirname, true)
+sa.initLoggingConsumer(__dirname)
 sa.disableReNameOption()
 sa.submitTo(URL, { gzip: true, mode: 'debug', timeout: 10 * 1000 })
 sa.registerSuperProperties({
@@ -28,8 +28,8 @@ sa.itemSet(itemType, itemId, properties)
 // 删除商品
 sa.itemDelete(itemType, itemId)
 
-// module.exports = sa
-// let n = 1000
-// while (n--) {
-//   sa.track('bsfjsfish', 'dsda')
-// }
+module.exports = sa
+let n = 1000
+while (n--) {
+  sa.track('bsfjsfish', 'dsda')
+}
