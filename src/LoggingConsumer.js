@@ -1,62 +1,55 @@
 /**
  * Created by m1911 on 17/1/12.
  */
-import log4js from 'log4js'
-// import moment from 'moment'
-// import serialize from 'node-serialize'
-// import fs from 'fs'
+import { createLogger, format, transports } from "winston";
+import "winston-daily-rotate-file";
 
 export default class LoggingConsumer {
   constructor(filePath, pm2Mode) {
-    this.currentFileName = null
-    this.logger = null
-    this.logName = 'SensorsData.Analytics.LoggingConsumer'
-    this.filePrefix = '/service.log.'
-    this.initLoggingConsumer(filePath, pm2Mode)
+    this.currentFileName = null;
+    this.logger = null;
+    this.logName = "SensorsData.Analytics.LoggingConsumer";
+    this.filePrefix = "/service.log.";
+    this.initLoggingConsumer(filePath, pm2Mode);
   }
 
   initLoggingConsumer(filePath, pm2Mode) {
-    // const reg = new RegExp('/^/([/w]+/?)+$/i')
-    // if (!reg.exec(filePath)) {
-    //   throw new Error('file path error')
-    // }
-    // const fileName = this.constructFilePath()
-    log4js.configure({
-      appenders: {
-        task: {
-          type: 'dateFile',
-          filename: filePath + this.filePrefix,
-          pattern: 'yyyyMMdd',
-          alwaysIncludePattern: true,
-          layout: {
-            type: 'pattern',
-            pattern: '%m',
-          },
-        },
-      },
-      categories: {
-        default: { appenders: ['task'], level: 'info' },
-      },
-      pm2: !!pm2Mode,
-    })
-    this.logger = log4js.getLogger(this.logName)
+    this.initLoggingConsumer(filePath);
+  }
+
+  initLoggingConsumer(filePath) {
+    const myFormat = format.printf(({ message }) => {
+      return message;
+    });
+    const saLogConfiguration = {
+      transports: [
+        new transports.DailyRotateFile({
+          filename: filePath + this.filePrefix + "%DATE%",
+          datePattern: "YYYYMMDD",
+          format: myFormat,
+          level: "info",
+          zippedArchive: true
+        })
+      ]
+    };
+    this.logger = createLogger(saLogConfiguration);
   }
 
   doFlush() {}
 
   send(msg) {
     try {
-      this.logger.info(JSON.stringify(msg))
+      this.logger.info(JSON.stringify(msg));
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   }
 
   close() {
-    log4js.shutdown(() => {})
+    log4js.shutdown(() => {});
   }
 
   constructFilePath() {
-    return this.filePrefix
+    return this.filePrefix;
   }
 }
