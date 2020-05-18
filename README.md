@@ -32,9 +32,6 @@ Node 4.0 及以上。
 * 4.  创建 pull request，向 sa-sdk-node 官方开发分支提交合入请求；
 * 5.  神策 SDK 研发团队会及时 review 代码，测试通过后合入。
 
-## 规划
-
-可参考 [ROADMAP](ROADMAP.md).
 
 ## 讨论
 
