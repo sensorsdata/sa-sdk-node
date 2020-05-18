@@ -4,6 +4,7 @@
 [![NPM version][npm-image]][npm-url] 
 [![Build Status][ci-image]][ci-url] 
 [![Dependency Status][depstat-image]][depstat-url]
+[![NPM downloads][npm-downloads]][npm-url]
 
 ## 神策简介
 
@@ -70,10 +71,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-
 ---
-
-[![NPM downloads][npm-downloads]][npm-url]
 
 [homepage]: https://github.com/timnew/sa-sdk-node
 [npm-url]: https://npmjs.org/package/sa-sdk-node
