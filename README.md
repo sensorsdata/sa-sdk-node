@@ -1,306 +1,62 @@
-# THE MAINTENANCE IS MOVED TO OFFICIAL REPO:
+![logo](https://opensource.sensorsdata.cn/wp-content/uploads/logo.png)
+<br><br>
+[![License](https://img.shields.io/github/license/sensorsdata/sa-sdk-android.svg)](https://github.com/sensorsdata/sa-sdk-android/blob/master/LICENSE)
+[![NPM version][npm-image]][npm-url] 
+[![Build Status][ci-image]][ci-url] 
+[![Dependency Status][depstat-image]][depstat-url]
 
-# https://github.com/sensorsdata/sa-sdk-node
+## 神策简介
 
-# Sensors Analytics [![NPM version][npm-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Dependency Status][depstat-image]][depstat-url]
+[**神策数据**](https://www.sensorsdata.cn/)
+（Sensors Data），隶属于神策网络科技（北京）有限公司，是一家专业的大数据分析服务公司，大数据分析行业开拓者，为客户提供深度用户行为分析平台、以及专业的咨询服务和行业解决方案，致力于帮助客户实现数据驱动。神策数据立足大数据及用户行为分析的技术与实践前沿，业务现已覆盖以互联网、金融、零售快消、高科技、制造等为代表的十多个主要行业、并可支持企业多个职能部门。公司总部在北京，并在上海、深圳、合肥、武汉等地拥有本地化的服务团队，覆盖东区及南区市场；公司拥有专业的服务团队，为客户提供一对一的客户服务。公司在大数据领域积累的核心关键技术，包括在海量数据采集、存储、清洗、分析挖掘、可视化、智能应用、安全与隐私保护等领域。 [**More**](https://www.sensorsdata.cn/about/aboutus.html)
 
-> This is the home-brewed version of Node SDK for [Sensors Analytics].
 
-## Install
+## SDK 简介
 
-Install using [npm][npm-url].
+SensorsAnalytics SDK 是国内第一家开源商用版用户行为采集 SDK，目前支持代码埋点、全埋点、App 点击图、可视化全埋点等。目前已累计有 1000 多家付费客户，2000+ 的 App 集成使用，作为 App 数据采集利器，致力于帮助客户挖掘更多的商业价值，为其精准运营和业务支撑提供了可靠的数据来源。其采集全面而灵活、性能良好，并一直保持稳定的迭代，经受住了时间和客户的考验。
 
-    $ npm install sa-sdk-node --save
+## 基本要求
+Node 4.0 及以上。
 
-##Attention
+## 集成文档
 
-In the latest version(v1.0.8), we added a option named `allowReNameOption` valued `true` by default.
-In this case, we change the property value and the keys to snake style with '\_'.
-eg:
+请参考神策官网 [Node SDK 集成文档](https://manual.sensorsdata.cn/sa/latest/tech_sdk_server_node-1573943.html)。
 
-```js
-// when 'allowReNameOption' is true
-sa.track('user-id', 'userHappy', {
-  '$appVersion': '1.0.0',
-  'orderId': '123'
-})
 
-// then we get the data
-{
-...
-'event': 'user_happy'
-'properties': {
-  '$app_version': '1.0.0',
-  'order_id': '123'
-}
-...
-}
-```
+## 贡献
 
-You can use `sa.disableReNameOption()` to set `allowReNameOption` to be `false`.
-In this case, when you set default property, you must use like `$app_version`, `$appVersion` style could be error. Refer to [Data schema](https://sensorsdata.cn/manual/data_schema.html) for more detail.
-Property name like `orderId` will be kept.
+* 1.  在您的 GitHub 账户下 fork sa-sdk-node 开源项目；
+* 2.  根据您的需求在本地 clone 一份 sa-sdk-node 源码；
+* 3.  您修改或者新增功能后，push 到您 fork 的远程分支；
+* 4.  创建 pull request，向 sa-sdk-node 官方开发分支提交合入请求；
+* 5.  神策 SDK 研发团队会及时 review 代码，测试通过后合入。
 
-## Usage
+## 规划
 
-### Basic Usage
+可参考 [ROADMAP](ROADMAP.md).
 
-```js
-import SensorsAnalytics from "sa-sdk-node";
+## 讨论
 
-const sa = new SensorsAnalytics();
+| 扫码加入神策数据开源社区 QQ 群<br>群号：785122381 | 扫码加入神策数据开源社区微信群 |
+| ------ | ------ |
+|![ QQ 讨论群](https://opensource.sensorsdata.cn/wp-content/uploads/ContentCommonPic_1.png) | ![ 微信讨论群 ](https://opensource.sensorsdata.cn/wp-content/uploads/ContentCommonPic_2.png) |
 
-sa.submitTo("http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx");
+## 公众号
 
-// Super Properties that assigned to every event tracking
-sa.registerSuperProperties({ $appVersion: "1.0.0", env: "production" });
+| 扫码关注<br>神策数据开源社区 | 扫码关注<br>神策数据开源社区服务号 |
+| ------ | ------ |
+|![ 微信订阅号 ](https://opensource.sensorsdata.cn/wp-content/uploads/ContentCommonPic_3.png) | ![ 微信服务号 ](https://opensource.sensorsdata.cn/wp-content/uploads/ContentCommonPic_4.png) |
 
-// Track event
-sa.track("user-id", "userHappy");
 
-// Track event with custom properties
-sa.track("user-id", "newOrder", { orderId: "12323" });
+## 新书推荐
 
-// Track Signup
-sa.trackSignup("user-id", "anonymous-id/device-id");
-
-// Track Signup with custom properties
-sa.trackSignup("user-id", "anonymous-id/device-id", {
-  userType: "administrator"
-});
-
-// Manipuate user project
-sa.profileSet("user-id", { age: 18 });
-sa.profileSetOnce("user-id", { registerTime: new Date().valueOf() });
-sa.profileIncrement("user-id", { scoreCount: 100, issueCount: -1 });
-sa.profileAppend("user-id", { tags: ["student", "developer"] });
-sa.profileUnset("user-id", ["temporaryTag"]);
-```
-
-For more detailed information about each api, checkout [Sensors Analytics manual]
-
-#### Override event time
-
-By default, the library uses current time as the time when event occurs,
-but the behavior can be overrode by `$time` property.
-
-- Both `track` and `trackSignup` support this feature.
-- `$time` can be `Date`, `number`, `string`, `Moment` instance
-
-```js
-import moment from "moment";
-
-sa.track("user-id", "newOrder", {
-  orderId: "12323",
-  $time: new Date(2016, 7, 30)
-});
-sa.track("user-id", "newOrder", {
-  orderId: "12323",
-  $time: "2016-07-30T00:00:00+08:00"
-});
-sa.track("user-id", "newOrder", { orderId: "12323", $time: 1469808000000 });
-sa.track("user-id", "newOrder", { orderId: "12323", $time: moment() });
-
-sa.trackSignup("user-id", "anonymous-id/device-id", {
-  $time: new Date(2016, 7, 30)
-});
-sa.trackSignup("user-id", "anonymous-id/device-id", {
-  $time: "2016-07-30T00:00:00+08:00"
-});
-sa.trackSignup("user-id", "anonymous-id/device-id", { $time: 1469808000000 });
-sa.trackSignup("user-id", "anonymous-id/device-id", { $time: moment() });
-```
-
-#### Parse Geolocation
-
-SensorsData support parsing user geo location from IP address.
-
-- Both `track` and `trackSignup` support this feature.
-
-```js
-router.post("/api/new-order", (req, res) => {
-  sa.track(req.session.userId, "newOrder", { $ip: req.ip });
-
-  // ...
-});
-```
-
-#### Parse User Agent
-
-Node SDK supports parsing client `OS`, `OS version`, `Browser`, `Browser version`, `Browser Engine`, `Model` from client's `User Agent`
-
-- Both `track` and `trackSignup` support this feature.
-
-```js
-router.post("/api/new-order", (req, res) => {
-  sa.track(req.session.userId, "newOrder", {
-    $userAgent: req.get("user-agent")
-  });
-  // ...
-});
-```
-
-### Config Submitter
-
-By default, submitter can be created with server url
-
-```js
-import SensorsAnalytics from "sa-sdk-node";
-
-const url = "http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx";
-
-const sa = new SensorsAnalytics();
-
-const submitter = sa.submitTo(url);
-```
-
-But it also can be created with explicit config
-
-```js
-import SensorsAnalytics from "sa-sdk-node";
-
-const url = "http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx";
-
-const sa = new SensorsAnalytics();
-
-const submitter = sa.submitTo({
-  url,
-  gzip: true,
-  mode: "track",
-  timeout: 10 * 1000
-});
-// gzip: whether enable gzip, default to true
-// mode: could be 'track' (production use), 'debug' (diagnosis data), 'dryRun' (diagnosis with no data recorded),
-//       also supports the values that aligned to other SDKs: debug_off, debug_and_track and debug_only,
-//       default to track
-// mode:
-// timeout: Http timeout in ms, default to 10s
-```
-
-Submitter can be create manually and attach to `SensorsAnalytics` manually
-
-Created with url with default config
-
-```js
-import SensorsAnalytics, { Submitter } from "sa-sdk-node";
-
-const url = "http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx";
-
-const sa = new SensorsAnalytics();
-
-const submitter = new Submitter(url);
-
-sa.subscribe(submitter);
-```
-
-Or with explicit config
-
-```js
-import SensorsAnalytics, { Submitter } from "sa-sdk-node";
-
-const url = "http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx";
-
-const sa = new SensorsAnalytics();
-
-const submitter = new Submitter({
-  url,
-  gzip: true,
-  mode: "track",
-  timeout: 10 * 1000
-});
-
-sa.subscribe(submitter);
-```
-
-Network error handling
-
-```js
-submitter.catch(err => console.error(err));
-```
-
-### Batch Submit
-
-**WARN** Batch submit is not supported by `debug` or `dryRun` mode. It causes 400 bad-request error
-
-Suppose
-
-```js
-import SensorsAnalytics, { Submitter } from "sa-sdk-node";
-
-const url = "http://xxx.cloud.sensorsdata.cn:8006/sa?token=xxx";
-
-const sa = new SensorsAnalytics();
-```
-
-#### Batch with count
-
-```js
-// Submit when 20 events are tracked
-sa.submitTo(url, { count: 20 });
-```
-
-#### Batch with time
-
-```js
-// Submit when every 5 seconds
-sa.submitTo(url, { timeSpan: 5 * 1000 });
-```
-
-#### Batch with time or count
-
-```js
-// Submit every 5 seconds, but also submit immediately if 20 events tracked
-sa.submitTo(url, { count: 20, timeSpan: 5 * 1000 });
-```
-
-#### Create batch manually
-
-`Batch` can be created manually if needed, which can be subscribed with `submitter` later
-
-```js
-const batch = sa.inBatch({ count: 20, timeSpan: 5 * 1000 });
-
-batch.subscribe(new Submitter(url));
-```
-
-### Advanced Usage
-
-This library is powered by Microsoft's [RxJS].
-
-`SensorsAnalytics` is an [Observable], which yields tracking data.
-
-`Submitter` is an [Observer], which consume the tracking data.
-
-`Submitter` is also an [Observable], which yields next when submitted succeeded, and yields `Error` when network errors.
-
-Ideally, you can use all [RxJS] tricks with this library
-
-### Filtering
-
-```js
-// All the event that raised by debug build app won't be submitted
-sa.filter(event => event.properties.releaseType !== "debug").subscribe(
-  submitter
-);
-```
-
-### Debounce
-
-```js
-// Useful while tracking user input or other case
-// The event won't be tracked unless user has stopped typing for 500ms
-sa.debounce(500).subscribe(submitter);
-
-textInput.onChange(text => sa.track(userId, "userType", { text }));
-```
-
-### More Detail
-
-For more detail, checkout Microsoft's [Rx documentation]
+| 《数据驱动：从方法到实践》 | 《Android 全埋点解决方案》 | 《iOS 全埋点解决方案》
+| ------ | ------ | ------ |
+| [![《数据驱动：从方法到实践》](https://opensource.sensorsdata.cn/wp-content/uploads/data_driven_book_1.jpg)](https://union-click.jd.com/jdc?e=&p=AyIGZRprFQEQBFYZWBYyVlgNRQQlW1dCFFlQCxxKQgFHREkdSVJKSQVJHFRXFk9FUlpGQUpLCVBaTFhbXQtWVmpSWRtYFwERBVYYa2FKZx0XchgUYnYEA0wjXgtAREt6JFMOHjdUK1sUAxIDUBxdHQQiN1Uca0NsEgZUGloUBxICVitaJQIWDlYcWBUGFQNVH1slBRIOZUcFSVx8QR5QayUyETdlK1slASJFO0lbRwtCAVEYDhUBEQIGGl0cVUYDVEwMFQYaAVFIC0dRIgVUGl8c) | [![《Android 全埋点解决方案》](https://opensource.sensorsdata.cn/wp-content/uploads/Android-全埋点thumbnail_1.png)](https://item.jd.com/12574672.html) | ![《iOS 全埋点解决方案》](https://opensource.sensorsdata.cn/wp-content/uploads/iOS-全埋点thumbnail_1.png)
 
 ## License
 
-Copyright 2015－2019 Sensors Data Inc.
+Copyright 2015－2020 Sensors Data Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -314,7 +70,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-**禁止一切基于神策数据 Node 开源 SDK 的所有商业活动！**
 
 ---
 
