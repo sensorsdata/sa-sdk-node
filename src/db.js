@@ -11,7 +11,6 @@ class DBCache {
     this.db = new Database(cachePath + '/salog.db', (err) => {
       if (err) {
         console.log(err)
-        return
       }
       this.db.run(`CREATE TABLE IF NOT EXISTS salog(id INTEGER PRIMARY KEY AUTOINCREMENT,log TEXT)`, (err) => {
         if (err) {
