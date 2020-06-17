@@ -1,5 +1,7 @@
 import R from 'ramda'
-import { Subject } from 'rx'
+import {
+  Subject,
+} from 'rx'
 
 import createDebug from 'debug'
 import {
@@ -9,7 +11,9 @@ import {
   extractCodeProperties,
   translateUserAgent,
 } from './translators'
-import { version as PACKAGE_VERSION } from './readPackageInfo'
+import {
+  version as PACKAGE_VERSION,
+} from './readPackageInfo'
 import {
   checkExists,
   checkPattern,
@@ -21,6 +25,7 @@ import {
 } from './assertions'
 import Submitter from './Submitter'
 import LoggingConsumer from './LoggingConsumer'
+import NWConsumer from './NWConsumer'
 
 const debug = createDebug('sa:SensorsAnalytics')
 
@@ -34,7 +39,7 @@ class SensorsAnalytics extends Subject {
     super()
     this.logger = null
     this.loggingConsumer = false
-    this.enableReNameOption()
+    this.disableReNameOption()
     this.clearSuperProperties()
   }
 
@@ -91,8 +96,7 @@ class SensorsAnalytics extends Subject {
           SDK_PROPERTIES,
           codeProperties,
           {
-            $app_version:
-              this.superProperties.$app_version
+            $app_version: this.superProperties.$app_version
               || this.superProperties.$appVersion
               || properties.$app_version
               || properties.$appVersion,
@@ -103,7 +107,11 @@ class SensorsAnalytics extends Subject {
   }
 
   track(distinctId, event, eventProperties) {
-    debug('track(%j)', { distinctId, event, eventProperties })
+    debug('track(%j)', {
+      distinctId,
+      event,
+      eventProperties,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkPattern(event, 'event')
@@ -123,7 +131,11 @@ class SensorsAnalytics extends Subject {
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
-    debug('trackSignup(%j)', { distinctId, originalId, eventProperties })
+    debug('trackSignup(%j)', {
+      distinctId,
+      originalId,
+      eventProperties,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkExists(originalId, 'originalId')
@@ -144,7 +156,10 @@ class SensorsAnalytics extends Subject {
   }
 
   profileSet(distinctId, properties) {
-    debug('profileSet(%j)', { distinctId, properties })
+    debug('profileSet(%j)', {
+      distinctId,
+      properties,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
@@ -170,7 +185,10 @@ class SensorsAnalytics extends Subject {
   }
 
   profileSetOnce(distinctId, properties) {
-    debug('profileSetOnce(%j)', { distinctId, properties })
+    debug('profileSetOnce(%j)', {
+      distinctId,
+      properties,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueType)
@@ -196,36 +214,58 @@ class SensorsAnalytics extends Subject {
   }
 
   profileIncrement(distinctId, properties) {
-    debug('profileIncrement(%j)', { distinctId, properties })
+    debug('profileIncrement(%j)', {
+      distinctId,
+      properties,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueIsNumber)
 
-    this.internalTrack('profile_increment', { distinctId, properties })
+    this.internalTrack('profile_increment', {
+      distinctId,
+      properties,
+    })
   }
 
   profileAppend(distinctId, properties) {
-    debug('profileAppend(%j)', { distinctId, properties })
+    debug('profileAppend(%j)', {
+      distinctId,
+      properties,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueIsStringArray)
 
-    this.internalTrack('profile_append', { distinctId, properties })
+    this.internalTrack('profile_append', {
+      distinctId,
+      properties,
+    })
   }
 
   profileUnset(distinctId, keys = []) {
-    debug('profileUnset(%j)', { distinctId, keys })
+    debug('profileUnset(%j)', {
+      distinctId,
+      keys,
+    })
 
     checkExists(distinctId, 'distinctId')
     checkIsStringArray(keys, 'Keys')
 
     const properties = R.zipObj(keys, R.repeat(true, keys.length))
 
-    this.internalTrack('profile_unset', { distinctId, properties })
+    this.internalTrack('profile_unset', {
+      distinctId,
+      properties,
+    })
   }
 
   itemSet(itemType, itemId, properties) {
-    debug('itemSet(%j)', { itemType, itemId, properties })
+    debug('itemSet(%j)', {
+      itemType,
+      itemId,
+      properties,
+    })
     checkProperties(properties, checkValueType)
     const superize = this.superizeProperties(properties, 4)
     this.internalTrack('item_set', {
@@ -240,7 +280,10 @@ class SensorsAnalytics extends Subject {
   }
 
   itemDelete(itemType, itemId) {
-    debug('itemDelete(%j)', { itemType, itemId })
+    debug('itemDelete(%j)', {
+      itemType,
+      itemId,
+    })
     const superize = this.superizeProperties({}, 4)
     this.internalTrack('item_delete', {
       itemType,
@@ -254,13 +297,20 @@ class SensorsAnalytics extends Subject {
   }
 
   internalTrack(
-    type,
-    {
-      event, distinctId, originalId, itemType, itemId, properties, lib,
+    type, {
+      event,
+      distinctId,
+      originalId,
+      itemType,
+      itemId,
+      properties,
+      lib,
     }
   ) {
     if (this.allowReNameOption) {
+      // eslint-disable-next-line no-param-reassign
       properties = snakenizeKeys(properties)
+      // eslint-disable-next-line no-param-reassign
       event = pascal2Snake(event)
     }
     const envelope = snakenizeKeys({
@@ -285,12 +335,19 @@ class SensorsAnalytics extends Subject {
     }
   }
 
-  inBatch({ count, timeSpan }) {
+  inBatch({
+    count,
+    timeSpan,
+  }) {
     const mode = `${count != null ? 'count' : ''}${
       timeSpan != null ? 'time' : ''
     }`
 
-    debug('inBatch(%j)', { count, timeSpan, mode })
+    debug('inBatch(%j)', {
+      count,
+      timeSpan,
+      mode,
+    })
 
     switch (mode) {
       case 'count':
@@ -318,6 +375,18 @@ class SensorsAnalytics extends Subject {
 
     return submitter
   }
+
+  initNWConsumer(options, batchOptions = {}) {
+    debug('initNWConsumer(%j, %j)', options, batchOptions)
+
+    const observable = this.inBatch(batchOptions)
+    const submitter = new NWConsumer(options)
+
+    observable.subscribe(submitter)
+
+    return submitter
+  }
+
 
   initLoggingConsumer(path, pm2Mode) {
     this.enableLoggingConsumer()

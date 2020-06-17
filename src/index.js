@@ -1,6 +1,6 @@
 import Submitter from './Submitter'
 import SensorsAnalytics from './SensorsAnalytics'
 
-// Use module.exports to ensure compatiblity with non-es6 projects
+// eslint-disable-next-line no-multi-assign
 exports = module.exports = SensorsAnalytics
 exports.Submitter = Submitter
