@@ -2,8 +2,12 @@ import gulp from 'gulp'
 import babel from 'gulp-babel'
 import shell from 'gulp-shell'
 
-const presets = [['@babel/env']]
-module.exports = { presets }
+const presets = [
+  ['@babel/env'],
+]
+module.exports = {
+  presets,
+}
 gulp.task('test', (done) => {
   console.log('It works!')
   done()
@@ -19,7 +23,9 @@ gulp.task('babel', () => gulp
   .pipe(gulp.dest('dist')))
 
 gulp.task('spec:ut', () => gulp
-  .src('*.js', { read: false })
+  .src('*.js', {
+    read: false,
+  })
   .pipe(
     shell([
       './node_modules/.bin/mocha --harmony --opts mocha.opts "specs/**/*Spec.js"',
@@ -33,7 +39,9 @@ gulp.task('watch', () => {
 })
 
 gulp.task('spec:smoke', () => gulp
-  .src('*.js', { read: false })
+  .src('*.js', {
+    read: false,
+  })
   .pipe(
     shell([
       'DEBUG=sa:* ./node_modules/.bin/mocha --harmony --opts mocha.opts "specs/smokingTest.js"',
