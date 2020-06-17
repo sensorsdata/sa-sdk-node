@@ -39,7 +39,7 @@ class SensorsAnalytics extends Subject {
     super()
     this.logger = null
     this.loggingConsumer = false
-    this.disableReNameOption()
+    this.enableReNameOption()
     this.clearSuperProperties()
   }
 
