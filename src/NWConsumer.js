@@ -43,6 +43,7 @@ const MODES = {
 }
 
 class NWConsumer extends Subject {
+
   static composeDebugUrl(url) {
     return urlUtil.format(R.merge(urlUtil.parse(url), {
       pathname: '/debug',
@@ -86,13 +87,7 @@ class NWConsumer extends Subject {
     }
 
     debug('Config: %o', this)
-
     this.db = new DBCache(cachePath)
-    new Promise(() => {
-      this.db.uploadCache((message) => {
-        this.submit(message)
-      })
-    })
     this.dataQueue = new TaskQueue({
       consumeData: ::this.submit,
       onSucceeded: () => {
@@ -100,6 +95,7 @@ class NWConsumer extends Subject {
       },
       onError: ::this.onError,
     })
+    this.pushCache()
   }
 
   catch (callback) {
@@ -114,6 +110,12 @@ class NWConsumer extends Subject {
     debug('onNext(%o)', data)
 
     this.dataQueue.enqueueAndStart(data)
+  }
+
+  async pushCache() {
+    this.db.uploadCache((message) => {
+      this.submit(message)
+    })
   }
 
   async submit(data) {
