@@ -99,6 +99,7 @@ class NWConsumer extends Subject {
   }
 
   catch (callback) {
+    debug('Error:')
     this.subscribe(
       R.identity,
       callback,
@@ -132,7 +133,6 @@ class NWConsumer extends Subject {
     }
 
     debug('submit(%j)', messages)
-    console.log(JSON.stringify(messages))
     const payloadText = new Buffer(JSON.stringify(messages), 'utf8')
     const dataListBuffer = await (this.gzip ? zlib.gzip(payloadText) : payloadText)
     const body = encodeForm({
@@ -156,6 +156,9 @@ class NWConsumer extends Subject {
       headers,
       body,
       timeout: this.timeout,
+    }).catch((err) => {
+      this.db.cacheLog(JSON.stringify(data))
+      debug(`timeout: ${err}`)
     })
     debug('Post complete')
 

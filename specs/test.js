@@ -12,6 +12,7 @@ const URL = 'https://newsdktest.datasink.sensorsdata.cn/sa?project=weiyi&token=5
 sa.initNWConsumer({
   url: URL,
   cachePath: __dirname,
+  timeout: 1000
 })
 sa.disableReNameOption()
 // sa.submitTo(URL, {
