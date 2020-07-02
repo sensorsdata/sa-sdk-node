@@ -7,27 +7,12 @@ let db;
 
 class DBCache {
 
-
-
   constructor(cachePath) {
-
     db = new Database(cachePath + '/salog.db');
-    db.serialize(()=>{
+    db.serialize(() => {
       let sql = `CREATE TABLE IF NOT EXISTS salog(id INTEGER PRIMARY KEY AUTOINCREMENT,log TEXT)`;
       db.run(sql)
     })
-
-    // this.db = new Database(cachePath + '/salog.db', (err) => {
-    //   if (err) {
-    //     console.log(err)
-    //   } else {
-    //     this.db.run(`CREATE TABLE IF NOT EXISTS salog(id INTEGER PRIMARY KEY AUTOINCREMENT,log TEXT)`, (err) => {
-    //       if (err) {
-    //         console.log(err)
-    //       }
-    //     })
-    //   }
-    // })
   }
 
   cacheLog(message) {
@@ -60,11 +45,11 @@ class DBCache {
   async uploadCache(upload) {
     this.selectAll().then((rows) => {
       _.forEach(rows, (id, log) => {
+        this.deleteById(id.id)
         const message = JSON.parse(id.log)
         if (message._track_id) {
           upload(message)
         }
-        this.deleteById(id.id)
       })
     }).catch((err) => {
       console.log(err)

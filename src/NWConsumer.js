@@ -115,7 +115,9 @@ class NWConsumer extends Subject {
 
   async pushCache() {
     this.db.uploadCache((message) => {
-      this.submit(message)
+      this.submit(message).catch((err) => {
+        debug(err)
+      })
     })
   }
 
@@ -151,32 +153,34 @@ class NWConsumer extends Subject {
     debug('Body: %o', body)
 
     debug('Posting...')
-    const response = await fetch(this.url, {
+    fetch(this.url, {
       method: 'POST',
       headers,
       body,
       timeout: this.timeout,
+    }).then((response) => {
+      debug('Post complete')
+      if (response.ok) {
+        debug('Suceeded: %d', response.status)
+        return
+      }
+
+      debug('Error: %s', response.status)
+
+      this.db.cacheLog(JSON.stringify(data))
+      if (this.debug && messages.count > 1 && response.status === 400) {
+        debug('Batch mode is not supported in debug')
+        throw new Error('Batch mode is not supported in Debug')
+      }
+
+      response.text().then((errorMessage) => {
+        throw new Error(errorMessage)
+      })
     }).catch((err) => {
       this.db.cacheLog(JSON.stringify(data))
       debug(`timeout: ${err}`)
     })
-    debug('Post complete')
 
-    if (response.ok) {
-      debug('Suceeded: %d', response.status)
-      return
-    }
-
-    debug('Error: %s', response.status)
-
-    this.db.cacheLog(JSON.stringify(data))
-    if (this.debug && messages.count > 1 && response.status === 400) {
-      debug('Batch mode is not supported in debug')
-      throw new Error('Batch mode is not supported in Debug')
-    }
-
-    const errorMessage = await response.text()
-    throw new Error(errorMessage)
   }
 }
 

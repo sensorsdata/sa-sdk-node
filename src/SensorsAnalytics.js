@@ -96,10 +96,10 @@ class SensorsAnalytics extends Subject {
           SDK_PROPERTIES,
           codeProperties,
           {
-            $app_version: this.superProperties.$app_version
-              || this.superProperties.$appVersion
-              || properties.$app_version
-              || properties.$appVersion,
+            $app_version: this.superProperties.$app_version ||
+              this.superProperties.$appVersion ||
+              properties.$app_version ||
+              properties.$appVersion,
           },
         ])
       ),
@@ -271,10 +271,7 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('item_set', {
       itemType,
       itemId,
-      properties: R.mergeAll([
-        snakenizeKeys(SDK_PROPERTIES),
-        superize.properties,
-      ]),
+      properties: superize.properties,
       lib: superize.lib,
     })
   }
@@ -288,10 +285,7 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('item_delete', {
       itemType,
       itemId,
-      properties: R.mergeAll([
-        snakenizeKeys(SDK_PROPERTIES),
-        superize.properties,
-      ]),
+      properties: superize.properties,
       lib: superize.lib,
     })
   }
@@ -308,9 +302,7 @@ class SensorsAnalytics extends Subject {
     }
   ) {
     if (this.allowReNameOption) {
-      // eslint-disable-next-line no-param-reassign
       properties = snakenizeKeys(properties)
-      // eslint-disable-next-line no-param-reassign
       event = pascal2Snake(event)
     }
     const envelope = snakenizeKeys({
