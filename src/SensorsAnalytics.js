@@ -222,9 +222,23 @@ class SensorsAnalytics extends Subject {
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueIsNumber)
 
+    const superize = this.superizeProperties(properties, 4)
+
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+    ) {
+      delete superize.properties.$app_version
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+    ) {
+      delete superize.properties.$appVersion
+    }
+
     this.internalTrack('profile_increment', {
       distinctId,
       properties,
+      lib: superize.lib,
     })
   }
 
@@ -237,9 +251,23 @@ class SensorsAnalytics extends Subject {
     checkExists(distinctId, 'distinctId')
     checkProperties(properties, checkValueIsStringArray)
 
+    const superize = this.superizeProperties(properties, 4)
+
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+    ) {
+      delete superize.properties.$app_version
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+    ) {
+      delete superize.properties.$appVersion
+    }
+
     this.internalTrack('profile_append', {
       distinctId,
       properties,
+      lib: superize.lib,
     })
   }
 
@@ -254,9 +282,23 @@ class SensorsAnalytics extends Subject {
 
     const properties = R.zipObj(keys, R.repeat(true, keys.length))
 
+    const superize = this.superizeProperties(properties, 4)
+
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+    ) {
+      delete superize.properties.$app_version
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+    ) {
+      delete superize.properties.$appVersion
+    }
+
     this.internalTrack('profile_unset', {
       distinctId,
       properties,
+      lib: superize.lib,
     })
   }
 
@@ -271,7 +313,7 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('item_set', {
       itemType,
       itemId,
-      properties: superize.properties,
+      properties,
       lib: superize.lib,
     })
   }
@@ -285,7 +327,7 @@ class SensorsAnalytics extends Subject {
     this.internalTrack('item_delete', {
       itemType,
       itemId,
-      properties: superize.properties,
+      properties: {},
       lib: superize.lib,
     })
   }

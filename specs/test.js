@@ -24,9 +24,9 @@ sa.registerSuperProperties({
   // $app_version: '0.3.0',
   env: process.env.NODE_ENV || 'default',
 })
-// sa.profileSet('111', {
-//   aa: 'bb',
-// })
+sa.profileSet('111', {
+  aa: 'bb',
+})
 // sa.trackSignup('111', '222')
 // sa.track('111', 'aaa', {})
 // 商品 Type
@@ -40,9 +40,11 @@ const properties = {
   price: 31.54,
 }
 // 添加商品
-sa.itemSet(itemType, itemId, properties)
+// sa.itemSet(itemType, itemId, properties)
 // 删除商品
-sa.itemDelete(itemType, itemId)
+// sa.itemDelete(itemType, itemId)
+
+
 
 // module.exports = sa
 let n = 1000
