@@ -9,6 +9,7 @@ import encodeForm from 'form-urlencoded'
 import createDebug from 'debug'
 
 import TaskQueue from './TaskQueue'
+import DBCache from "./db"
 
 const debug = createDebug('sa:Submitter')
 
@@ -41,7 +42,8 @@ const MODES = {
   },
 }
 
-class Submitter extends Subject {
+class NWConsumer extends Subject {
+
   static composeDebugUrl(url) {
     return urlUtil.format(R.merge(urlUtil.parse(url), {
       pathname: '/debug',
@@ -50,19 +52,23 @@ class Submitter extends Subject {
 
   constructor({
     url,
+    cachePath,
     gzip = true,
     mode = 'track',
     timeout = DEFAULT_TIMEOUT,
   }) {
     super()
 
-    if (typeof arguments[0] === 'string') { // eslint-disable-line prefer-rest-params
-      // eslint-disable-next-line prefer-destructuring
-      url = arguments[0] // eslint-disable-line no-param-reassign, prefer-rest-params
+    if (typeof arguments[0] === 'string') {
+      url = arguments[0]
     }
 
     if (url == null) {
       throw new Error('Url is not provided')
+    }
+
+    if (cachePath == null) {
+      throw new Error('CachePath is not provided')
     }
 
     if (MODES[mode] == null) {
@@ -71,16 +77,17 @@ class Submitter extends Subject {
 
     Object.assign(this, {
       url,
+      cachePath,
       gzip,
       timeout,
     }, MODES[mode])
 
     if (this.debug) {
-      this.url = Submitter.composeDebugUrl(url)
+      this.url = NWConsumer.composeDebugUrl(url)
     }
 
     debug('Config: %o', this)
-
+    this.db = new DBCache(cachePath)
     this.dataQueue = new TaskQueue({
       consumeData: ::this.submit,
       onSucceeded: () => {
@@ -88,9 +95,11 @@ class Submitter extends Subject {
       },
       onError: ::this.onError,
     })
+    this.pushCache()
   }
 
-  catch(callback) {
+  catch (callback) {
+    debug('Error:')
     this.subscribe(
       R.identity,
       callback,
@@ -101,6 +110,18 @@ class Submitter extends Subject {
   onNext(data) {
     debug('onNext(%o)', data)
 
+    this.dataQueue.enqueueAndStart(data)
+  }
+
+  async pushCache() {
+    this.db.uploadCache((message) => {
+      this.submit(message).catch((err) => {
+        debug(err)
+      })
+    })
+  }
+
+  async submit(data) {
     if (data == null) {
       debug('Skiped due to empty data')
       return
@@ -113,13 +134,7 @@ class Submitter extends Subject {
       return
     }
 
-    this.dataQueue.enqueueAndStart(messages)
-  }
-
-  async submit(messages) {
     debug('submit(%j)', messages)
-    console.log(JSON.stringify(messages))
-    // eslint-disable-next-line no-buffer-constructor
     const payloadText = new Buffer(JSON.stringify(messages), 'utf8')
     const dataListBuffer = await (this.gzip ? zlib.gzip(payloadText) : payloadText)
     const body = encodeForm({
@@ -138,29 +153,35 @@ class Submitter extends Subject {
     debug('Body: %o', body)
 
     debug('Posting...')
-    const response = await fetch(this.url, {
+    fetch(this.url, {
       method: 'POST',
       headers,
       body,
       timeout: this.timeout,
+    }).then((response) => {
+      debug('Post complete')
+      if (response.ok) {
+        debug('Suceeded: %d', response.status)
+        return
+      }
+
+      debug('Error: %s', response.status)
+
+      this.db.cacheLog(JSON.stringify(data))
+      if (this.debug && messages.count > 1 && response.status === 400) {
+        debug('Batch mode is not supported in debug')
+        throw new Error('Batch mode is not supported in Debug')
+      }
+
+      response.text().then((errorMessage) => {
+        throw new Error(errorMessage)
+      })
+    }).catch((err) => {
+      this.db.cacheLog(JSON.stringify(data))
+      debug(`timeout: ${err}`)
     })
-    debug('Post complete')
 
-    if (response.ok) {
-      debug('Suceeded: %d', response.status)
-      return
-    }
-
-    debug('Error: %s', response.status)
-
-    if (this.debug && messages.count > 1 && response.status === 400) {
-      debug('Batch mode is not supported in debug')
-      throw new Error('Batch mode is not supported in Debug')
-    }
-
-    const errorMessage = await response.text()
-    throw new Error(errorMessage)
   }
 }
 
-export default Submitter
+export default NWConsumer
