@@ -5,14 +5,13 @@ const SensorsdataAnanlytics = require('../lib/SensorsAnalytics').default
 
 const sa = new SensorsdataAnanlytics()
 
-// const URL = 'http://127.0.0.1:8106/sa?project=default'
-const URL = 'https://newsdktest.datasink.sensorsdata.cn/sa?project=weiyi&token=5a394d2405c147ca'
+const URL = 'http://127.0.0.1:8106/sa?project=default'
 
 // sa.initLoggingConsumer(__dirname)
 sa.initNWConsumer({
-  url: URL,
-  cachePath: __dirname,
-  // timeout: 1000
+  url: URL, // 数据接收地址
+  cachePath: __dirname, // 缓存路径
+  timeout: 1 * 1000 // 发送数据超时时间
 })
 sa.disableReNameOption()
 // sa.submitTo(URL, {
@@ -40,17 +39,19 @@ const properties = {
   price: 31.54,
 }
 // 添加商品
-// sa.itemSet(itemType, itemId, properties)
+sa.itemSet(itemType, itemId, properties)
 // 删除商品
-// sa.itemDelete(itemType, itemId)
+sa.itemDelete(itemType, itemId)
 
 
 
 // module.exports = sa
-let n = 1000
-// while (n--) {
-  // sa.disableReNameOption()
-  // sa.profileSet(`bsfjsfish${n}`, { userHappy: n })
-  // sa.track('bsfjsfish', 'user_happy')
-  // sa.track('111', 'aaa', {})
-// }
+let n = 10
+while (n--) {
+  sa.disableReNameOption()
+  sa.profileSet(`bsfjsfish${n}`, {
+    userHappy: n
+  })
+  sa.track('bsfjsfish', 'user_happy')
+  sa.track('111', 'aaa', {})
+}

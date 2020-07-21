@@ -89,11 +89,11 @@ class NWConsumer extends Subject {
     debug('Config: %o', this)
     this.db = new DBCache(cachePath)
     this.dataQueue = new TaskQueue({
-      consumeData: ::this.submit,
+      consumeData: this.submit.bind(this),
       onSucceeded: () => {
         super.onNext(null)
       },
-      onError: ::this.onError,
+      onError: this.onError.bind(this),
     })
     this.pushCache()
   }

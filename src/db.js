@@ -1,52 +1,97 @@
-import {
-  Database
-} from "sqlite3";
-import * as _ from 'lodash'
+import LokiConstructor from 'lokijs'
+
+
 
 let db;
+let events
 
 class DBCache {
 
   constructor(cachePath) {
-    db = new Database(cachePath + '/salog.db');
-    db.serialize(() => {
-      let sql = `CREATE TABLE IF NOT EXISTS salog(id INTEGER PRIMARY KEY AUTOINCREMENT,log TEXT)`;
-      db.run(sql)
+    db = new LokiConstructor(cachePath + '/salog.db');
+    this._databaseInitialize();
+  }
+
+  _databaseInitialize() {
+    if (events === null) {
+      events = db.getCollection("events");
+    }
+    if (events === null) {
+      events = db.addCollection("events");
+    }
+  }
+
+  test() {
+    // db = new LokiConstructor(cachePath + '/salog.db');
+    console.log(db);
+    db.loadDatabase({}, function(err) {
+      if (events === null) {
+        events = db.getCollection("events");
+      }
+      if (events === null) {
+        events = db.addCollection("events");
+      }
+      if (err) {
+        console.log(err);
+      } else {
+        events = db.getCollection("events");
+        events.find().forEach((v, i) => {
+          console.log(v.message);
+        })
+      }
     })
   }
 
   cacheLog(message) {
-    db.run('INSERT INTO salog(log) VALUES(?)', [message], function(err) {
-      if (err) {
-        return console.log('insert data error: ', err.message)
-      }
-    })
+    // console.log(message);
+    // db.loadDatabase({}, function() {
+    var _collection = db.getCollection("events");
+
+    if (!_collection) {
+      // console.log("Collection %s does not exit. Creating ...", "events");
+      _collection = db.addCollection('events');
+    }
+    _collection.insert({
+      message: message
+    });
+    db.saveDatabase();
+    // });
+
   }
 
   selectAll() {
+    this._databaseInitialize();
     return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM salog', [], function(err, rows) {
+      db.loadDatabase({}, function(err) {
         if (err) {
           reject(err)
+        } else {
+          var _collection = db.getCollection("events");
+          if (!_collection) {
+            // console.log("Collection %s does not exit. Creating ...", "events");
+            _collection = db.addCollection('events');
+          }
+          resolve(_collection.find())
         }
-        resolve(rows)
       })
     })
   }
 
-  deleteById(id) {
-    db.run(`DELETE FROM salog WHERE id = ?`, [id], (err) => {
+  deleteById(row) {
+    var events = db.getCollection("events");
+    events.remove(row);
+    db.saveDatabase(function(err) {
       if (err) {
-        console.log(err)
+        console.log(err);
       }
-    })
+    });
   }
 
   async uploadCache(upload) {
     this.selectAll().then((rows) => {
-      _.forEach(rows, (id, log) => {
-        this.deleteById(id.id)
-        const message = JSON.parse(id.log)
+      rows.forEach((row, i) => {
+        this.deleteById(row)
+        const message = JSON.parse(row.message)
         if (message._track_id) {
           upload(message)
         }
