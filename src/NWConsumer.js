@@ -127,7 +127,15 @@ class NWConsumer extends Subject {
       return;
     }
 
-    const messages = Array.isArray(data) ? data : [data];
+    let message;
+
+    if (data._id && data.message) {
+      message = JSON.parse(data.message);
+    } else {
+      message = data;
+    }
+
+    const messages = Array.isArray(message) ? message : [message];
 
     if (messages.length === 0) {
       debug("Skiped due to empty batch data");
@@ -165,12 +173,16 @@ class NWConsumer extends Subject {
         debug("Post complete");
         if (response.ok) {
           debug("Suceeded: %d", response.status);
+          if (data._id && data.message) {
+            this.db.deleteEvent(data);
+          }
           return;
         }
 
         debug("Error: %s", response.status);
-
-        this.db.cacheLog(JSON.stringify(data));
+        if (!(data._id && data.message)) {
+          this.db.cacheLog(JSON.stringify(data));
+        }
         if (this.debug && messages.count > 1 && response.status === 400) {
           debug("Batch mode is not supported in debug");
           throw new Error("Batch mode is not supported in Debug");
@@ -181,7 +193,9 @@ class NWConsumer extends Subject {
         });
       })
       .catch((err) => {
-        this.db.cacheLog(JSON.stringify(data));
+        if (!(data._id && data.message)) {
+          this.db.cacheLog(JSON.stringify(data));
+        }
         debug(`timeout: ${err}`);
       });
   }

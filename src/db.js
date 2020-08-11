@@ -1,5 +1,7 @@
 import "core-js";
 import Nedb from "nedb";
+import createDebug from "debug";
+const debug = createDebug("sa:Submitter");
 
 let db;
 
@@ -14,7 +16,7 @@ class DBCache {
   cacheLog(message) {
     db.insert({ message: message }, (err, ret) => {
       if (err) {
-        console.log(err);
+        debug(err);
       }
     });
   }
@@ -22,7 +24,6 @@ class DBCache {
   selectAll() {
     return new Promise((resolve, reject) => {
       db.find({}, function (err, events) {
-        // console.log(events);
         if (err) {
           reject(err);
         } else {
@@ -32,7 +33,7 @@ class DBCache {
     });
   }
 
-  deleteById(event) {
+  deleteEvent(event) {
     db.remove({ _id: event._id }, {}, function (err, numRemoved) {
       if (err) {
         reject(err);
@@ -42,17 +43,18 @@ class DBCache {
 
   async uploadCache(upload) {
     this.selectAll()
-      .then((rows) => {
-        rows.forEach((row, i) => {
-          this.deleteById(row);
-          const message = JSON.parse(row.message);
-          if (message._track_id) {
-            upload(message);
-          }
+      .then((events) => {
+        events.forEach((event) => {
+          //   this.deleteById(event);
+          upload(event);
+          //   const message = JSON.parse(event.message);
+          //   if (message._track_id) {
+          //     upload(message);
+          //   }
         });
       })
       .catch((err) => {
-        console.log(err);
+        debug(err);
       });
   }
 }
