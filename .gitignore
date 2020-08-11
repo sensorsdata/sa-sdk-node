@@ -42,4 +42,4 @@ sample.rb
 package-lock.json
 yarn.lock
 
-.vscode
+specs/data/*

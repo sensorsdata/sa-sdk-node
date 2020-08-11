@@ -14,6 +14,10 @@ const db = new DBCache(__dirname)
 //   .catch((err) => {
 //     console.log(err)
 //   });
-db.uploadCache((message) => {
-  console.log(message);
+db.selectAll().then((rows) => {
+    rows.forEach(event => {
+        console.log(event.message);
+    });
+}).catch((err) => {
+    console.log(err);
 })

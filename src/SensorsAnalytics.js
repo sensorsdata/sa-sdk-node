@@ -1,19 +1,16 @@
-import R from 'ramda'
-import {
-  Subject,
-} from 'rx'
+import "core-js";
+import R from "ramda";
+import { Subject } from "rx";
 
-import createDebug from 'debug'
+import createDebug from "debug";
 import {
   pascal2Snake,
   snakenizeKeys,
   extractTimestamp,
   extractCodeProperties,
   translateUserAgent,
-} from './translators'
-import {
-  version as PACKAGE_VERSION,
-} from './readPackageInfo'
+} from "./translators";
+import { version as PACKAGE_VERSION } from "./readPackageInfo";
 import {
   checkExists,
   checkPattern,
@@ -22,70 +19,70 @@ import {
   checkValueType,
   checkValueIsNumber,
   checkValueIsStringArray,
-} from './assertions'
-import Submitter from './Submitter'
-import LoggingConsumer from './LoggingConsumer'
-import NWConsumer from './NWConsumer'
+} from "./assertions";
+import Submitter from "./Submitter";
+import LoggingConsumer from "./LoggingConsumer";
+import NWConsumer from "./NWConsumer";
 
-const debug = createDebug('sa:SensorsAnalytics')
+const debug = createDebug("sa:SensorsAnalytics");
 
 const SDK_PROPERTIES = {
-  $lib: 'Node',
+  $lib: "Node",
   $libVersion: PACKAGE_VERSION,
-}
+};
 
 class SensorsAnalytics extends Subject {
   constructor() {
-    super()
-    this.logger = null
-    this.loggingConsumer = false
-    this.enableReNameOption()
-    this.clearSuperProperties()
+    super();
+    this.logger = null;
+    this.loggingConsumer = false;
+    this.enableReNameOption();
+    this.clearSuperProperties();
   }
 
   disableLoggingConsumer() {
-    this.loggingConsumer = false
+    this.loggingConsumer = false;
   }
 
   enableLoggingConsumer() {
-    this.loggingConsumer = true
+    this.loggingConsumer = true;
   }
 
   registerSuperProperties(values = {}) {
-    debug('registerSuperProperties(%j)', values)
-    checkProperties(values, checkPattern)
-    checkProperties(values, checkValueType)
+    debug("registerSuperProperties(%j)", values);
+    checkProperties(values, checkPattern);
+    checkProperties(values, checkValueType);
 
-    return Object.assign(this.superProperties, values)
+    return Object.assign(this.superProperties, values);
   }
 
   clearSuperProperties() {
-    debug('clearSuperProperties()')
+    debug("clearSuperProperties()");
 
-    this.superProperties = {}
+    this.superProperties = {};
 
-    return this.superProperties
+    return this.superProperties;
   }
 
   disableReNameOption() {
-    debug('resetReNameOption()')
+    debug("resetReNameOption()");
 
-    this.allowReNameOption = false
+    this.allowReNameOption = false;
 
-    return this.allowReNameOption
+    return this.allowReNameOption;
   }
 
   enableReNameOption() {
-    debug('resetReNameOption()')
+    debug("resetReNameOption()");
 
-    this.allowReNameOption = true
+    this.allowReNameOption = true;
 
-    return this.allowReNameOption
+    return this.allowReNameOption;
   }
 
   superizeProperties(properties = {}, callIndex) {
     // 合并公共属性
-    const codeProperties = extractCodeProperties(callIndex)
+    const codeProperties = extractCodeProperties(callIndex);
     return {
       properties: R.mergeAll([
         this.superProperties,
@@ -96,30 +93,31 @@ class SensorsAnalytics extends Subject {
           SDK_PROPERTIES,
           codeProperties,
           {
-            $app_version: this.superProperties.$app_version ||
+            $app_version:
+              this.superProperties.$app_version ||
               this.superProperties.$appVersion ||
               properties.$app_version ||
               properties.$appVersion,
           },
         ])
       ),
-    }
+    };
   }
 
   track(distinctId, event, eventProperties) {
-    debug('track(%j)', {
+    debug("track(%j)", {
       distinctId,
       event,
       eventProperties,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkPattern(event, 'event')
-    checkProperties(eventProperties, checkValueType)
+    checkExists(distinctId, "distinctId");
+    checkPattern(event, "event");
+    checkProperties(eventProperties, checkValueType);
 
-    const superize = this.superizeProperties(eventProperties, 4)
+    const superize = this.superizeProperties(eventProperties, 4);
 
-    this.internalTrack('track', {
+    this.internalTrack("track", {
       event,
       distinctId,
       properties: R.mergeAll([
@@ -127,24 +125,24 @@ class SensorsAnalytics extends Subject {
         superize.properties,
       ]),
       lib: superize.lib,
-    })
+    });
   }
 
   trackSignup(distinctId, originalId, eventProperties) {
-    debug('trackSignup(%j)', {
+    debug("trackSignup(%j)", {
       distinctId,
       originalId,
       eventProperties,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkExists(originalId, 'originalId')
-    checkProperties(eventProperties, checkValueType)
+    checkExists(distinctId, "distinctId");
+    checkExists(originalId, "originalId");
+    checkProperties(eventProperties, checkValueType);
 
-    const superize = this.superizeProperties(eventProperties, 4)
+    const superize = this.superizeProperties(eventProperties, 4);
 
-    this.internalTrack('track_signup', {
-      event: '$SignUp',
+    this.internalTrack("track_signup", {
+      event: "$SignUp",
       distinctId,
       originalId,
       properties: R.mergeAll([
@@ -152,203 +150,199 @@ class SensorsAnalytics extends Subject {
         superize.properties,
       ]),
       lib: superize.lib,
-    })
+    });
   }
 
   profileSet(distinctId, properties) {
-    debug('profileSet(%j)', {
+    debug("profileSet(%j)", {
       distinctId,
       properties,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkProperties(properties, checkValueType)
+    checkExists(distinctId, "distinctId");
+    checkProperties(properties, checkValueType);
 
-    const superize = this.superizeProperties(properties, 4)
+    const superize = this.superizeProperties(properties, 4);
 
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$app_version")
     ) {
-      delete superize.properties.$app_version
+      delete superize.properties.$app_version;
     }
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$appVersion")
     ) {
-      delete superize.properties.$appVersion
+      delete superize.properties.$appVersion;
     }
 
-    this.internalTrack('profile_set', {
+    this.internalTrack("profile_set", {
       distinctId,
       properties: superize.properties,
       lib: superize.lib,
-    })
+    });
   }
 
   profileSetOnce(distinctId, properties) {
-    debug('profileSetOnce(%j)', {
+    debug("profileSetOnce(%j)", {
       distinctId,
       properties,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkProperties(properties, checkValueType)
+    checkExists(distinctId, "distinctId");
+    checkProperties(properties, checkValueType);
 
-    const superize = this.superizeProperties(properties, 4)
+    const superize = this.superizeProperties(properties, 4);
 
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$app_version")
     ) {
-      delete superize.properties.$app_version
+      delete superize.properties.$app_version;
     }
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$appVersion")
     ) {
-      delete superize.properties.$appVersion
+      delete superize.properties.$appVersion;
     }
 
-    this.internalTrack('profile_set_once', {
+    this.internalTrack("profile_set_once", {
       distinctId,
       properties: superize.properties,
       lib: superize.lib,
-    })
+    });
   }
 
   profileIncrement(distinctId, properties) {
-    debug('profileIncrement(%j)', {
+    debug("profileIncrement(%j)", {
       distinctId,
       properties,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkProperties(properties, checkValueIsNumber)
+    checkExists(distinctId, "distinctId");
+    checkProperties(properties, checkValueIsNumber);
 
-    const superize = this.superizeProperties(properties, 4)
+    const superize = this.superizeProperties(properties, 4);
 
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$app_version")
     ) {
-      delete superize.properties.$app_version
+      delete superize.properties.$app_version;
     }
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$appVersion")
     ) {
-      delete superize.properties.$appVersion
+      delete superize.properties.$appVersion;
     }
 
-    this.internalTrack('profile_increment', {
+    this.internalTrack("profile_increment", {
       distinctId,
       properties,
       lib: superize.lib,
-    })
+    });
   }
 
   profileAppend(distinctId, properties) {
-    debug('profileAppend(%j)', {
+    debug("profileAppend(%j)", {
       distinctId,
       properties,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkProperties(properties, checkValueIsStringArray)
+    checkExists(distinctId, "distinctId");
+    checkProperties(properties, checkValueIsStringArray);
 
-    const superize = this.superizeProperties(properties, 4)
+    const superize = this.superizeProperties(properties, 4);
 
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$app_version")
     ) {
-      delete superize.properties.$app_version
+      delete superize.properties.$app_version;
     }
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$appVersion")
     ) {
-      delete superize.properties.$appVersion
+      delete superize.properties.$appVersion;
     }
 
-    this.internalTrack('profile_append', {
+    this.internalTrack("profile_append", {
       distinctId,
       properties,
       lib: superize.lib,
-    })
+    });
   }
 
   profileUnset(distinctId, keys = []) {
-    debug('profileUnset(%j)', {
+    debug("profileUnset(%j)", {
       distinctId,
       keys,
-    })
+    });
 
-    checkExists(distinctId, 'distinctId')
-    checkIsStringArray(keys, 'Keys')
+    checkExists(distinctId, "distinctId");
+    checkIsStringArray(keys, "Keys");
 
-    const properties = R.zipObj(keys, R.repeat(true, keys.length))
+    const properties = R.zipObj(keys, R.repeat(true, keys.length));
 
-    const superize = this.superizeProperties(properties, 4)
+    const superize = this.superizeProperties(properties, 4);
 
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$app_version')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$app_version")
     ) {
-      delete superize.properties.$app_version
+      delete superize.properties.$app_version;
     }
     if (
-      Object.prototype.hasOwnProperty.call(superize.properties, '$appVersion')
+      Object.prototype.hasOwnProperty.call(superize.properties, "$appVersion")
     ) {
-      delete superize.properties.$appVersion
+      delete superize.properties.$appVersion;
     }
 
-    this.internalTrack('profile_unset', {
+    this.internalTrack("profile_unset", {
       distinctId,
       properties,
       lib: superize.lib,
-    })
+    });
   }
 
   itemSet(itemType, itemId, properties) {
-    debug('itemSet(%j)', {
+    debug("itemSet(%j)", {
       itemType,
       itemId,
       properties,
-    })
-    checkProperties(properties, checkValueType)
-    const superize = this.superizeProperties(properties, 4)
-    this.internalTrack('item_set', {
+    });
+    checkProperties(properties, checkValueType);
+    const superize = this.superizeProperties(properties, 4);
+    this.internalTrack("item_set", {
       itemType,
       itemId,
       properties,
       lib: superize.lib,
-    })
+    });
   }
 
   itemDelete(itemType, itemId) {
-    debug('itemDelete(%j)', {
+    debug("itemDelete(%j)", {
       itemType,
       itemId,
-    })
-    const superize = this.superizeProperties({}, 4)
-    this.internalTrack('item_delete', {
+    });
+    const superize = this.superizeProperties({}, 4);
+    this.internalTrack("item_delete", {
       itemType,
       itemId,
       properties: {},
       lib: superize.lib,
-    })
+    });
   }
 
   internalTrack(
-    type, {
-      event,
-      distinctId,
-      originalId,
-      itemType,
-      itemId,
-      properties,
-      lib,
-    }
+    type,
+    { event, distinctId, originalId, itemType, itemId, properties, lib }
   ) {
     if (this.allowReNameOption) {
-      properties = snakenizeKeys(properties)
-      event = pascal2Snake(event)
+      properties = snakenizeKeys(properties);
+      event = pascal2Snake(event);
     }
     const envelope = snakenizeKeys({
-      _track_id: parseInt(Math.random() * (9999999999 - 999999999 + 1) + 999999999, 10),
+      _track_id: parseInt(
+        Math.random() * (9999999999 - 999999999 + 1) + 999999999,
+        10
+      ),
       type,
       event,
       time: extractTimestamp(properties),
@@ -358,79 +352,77 @@ class SensorsAnalytics extends Subject {
       itemId,
       properties: checkProperties(properties, checkPattern),
       lib,
-    })
+    });
 
-    debug('envelope: %j', envelope)
+    debug("envelope: %j", envelope);
 
     if (this.loggingConsumer) {
-      this.logger.send(envelope)
+      this.logger.send(envelope);
     } else {
-      this.onNext(envelope)
+      this.onNext(envelope);
     }
   }
 
-  inBatch({
-    count,
-    timeSpan,
-  }) {
-    const mode = `${count != null ? 'count' : ''}${
-      timeSpan != null ? 'time' : ''
-    }`
+  inBatch({ count, timeSpan }) {
+    const mode = `${count != null ? "count" : ""}${
+      timeSpan != null ? "time" : ""
+    }`;
 
-    debug('inBatch(%j)', {
+    debug("inBatch(%j)", {
       count,
       timeSpan,
       mode,
-    })
+    });
 
     switch (mode) {
-      case 'count':
-        return this.bufferWithCount(count).filter(events => events.length > 0)
-      case 'counttime':
+      case "count":
+        return this.bufferWithCount(count).filter(
+          (events) => events.length > 0
+        );
+      case "counttime":
         return this.bufferWithTimeOrCount(timeSpan, count).filter(
-          events => events.length > 0
-        )
-      case 'time':
+          (events) => events.length > 0
+        );
+      case "time":
         return this.bufferWithTime(timeSpan).filter(
-          events => events.length > 0
-        )
+          (events) => events.length > 0
+        );
       default:
-        return this
+        return this;
     }
   }
 
   submitTo(options, batchOptions = {}) {
-    debug('submitTo(%j, %j)', options, batchOptions)
+    debug("submitTo(%j, %j)", options, batchOptions);
 
-    const observable = this.inBatch(batchOptions)
-    const submitter = new Submitter(options)
+    const observable = this.inBatch(batchOptions);
+    const submitter = new Submitter(options);
 
-    observable.subscribe(submitter)
+    observable.subscribe(submitter);
 
-    return submitter
+    return submitter;
   }
 
   initNWConsumer(options, batchOptions = {}) {
-    debug('initNWConsumer(%j, %j)', options, batchOptions)
+    debug("initNWConsumer(%j, %j)", options, batchOptions);
 
-    const observable = this.inBatch(batchOptions)
-    const submitter = new NWConsumer(options)
+    const observable = this.inBatch(batchOptions);
+    const submitter = new NWConsumer(options);
 
-    observable.subscribe(submitter)
+    observable.subscribe(submitter);
 
-    return submitter
+    return submitter;
   }
 
-
   initLoggingConsumer(path, pm2Mode) {
-    this.enableLoggingConsumer()
-    this.logger = new LoggingConsumer(path, pm2Mode)
+    this.enableLoggingConsumer();
+    this.logger = new LoggingConsumer(path, pm2Mode);
   }
 
   close() {
-    this.onCompleted()
-    this.logger.close()
+    this.onCompleted();
+    this.logger.close();
   }
 }
 
-export default SensorsAnalytics
+export default SensorsAnalytics;
