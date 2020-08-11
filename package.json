@@ -24,7 +24,7 @@
     "url": "https://github.com/sensorsdata/sa-sdk-node/issues"
   },
   "engines": {
-    "node": ">=6.0"
+    "node": ">=4.0"
   },
   "homepage": "https://github.com/sensorsdata/sa-sdk-node#readme",
   "devDependencies": {
