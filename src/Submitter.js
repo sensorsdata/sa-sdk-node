@@ -114,8 +114,6 @@ class Submitter extends Subject {
 
   async submit(messages) {
     debug("submit(%j)", messages);
-    console.log(JSON.stringify(messages));
-    // eslint-disable-next-line no-buffer-constructor
     const payloadText = new Buffer(JSON.stringify(messages), "utf8");
     const dataListBuffer = await (this.gzip
       ? zlib.gzip(payloadText)
