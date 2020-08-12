@@ -52,9 +52,7 @@ class Submitter extends Subject {
     super();
 
     if (typeof arguments[0] === "string") {
-      // eslint-disable-line prefer-rest-params
-      // eslint-disable-next-line prefer-destructuring
-      url = arguments[0]; // eslint-disable-line no-param-reassign, prefer-rest-params
+      url = arguments[0];
     }
 
     if (url == null) {
