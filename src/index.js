@@ -1,4 +1,3 @@
-import "core-js";
 import Submitter from "./Submitter";
 import SensorsAnalytics from "./SensorsAnalytics";
 

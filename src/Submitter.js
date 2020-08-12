@@ -1,4 +1,3 @@
-import "core-js";
 import R from "ramda";
 import { Subject } from "rx";
 import urlUtil from "url";

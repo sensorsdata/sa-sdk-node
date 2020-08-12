@@ -1,4 +1,3 @@
-import "core-js";
 import R from "ramda";
 import detector from "detector";
 

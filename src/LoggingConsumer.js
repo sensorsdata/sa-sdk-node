@@ -1,7 +1,6 @@
 /**
  * Created by m1911 on 17/1/12.
  */
-import "core-js";
 import { createLogger, format, transports } from "winston";
 import "winston-daily-rotate-file";
 

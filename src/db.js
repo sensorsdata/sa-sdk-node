@@ -1,4 +1,3 @@
-import "core-js";
 import Nedb from "nedb";
 import createDebug from "debug";
 const debug = createDebug("sa:Submitter");
@@ -45,12 +44,7 @@ class DBCache {
     this.selectAll()
       .then((events) => {
         events.forEach((event) => {
-          //   this.deleteById(event);
           upload(event);
-          //   const message = JSON.parse(event.message);
-          //   if (message._track_id) {
-          //     upload(message);
-          //   }
         });
       })
       .catch((err) => {

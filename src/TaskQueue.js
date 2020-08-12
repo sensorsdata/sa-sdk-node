@@ -1,4 +1,3 @@
-import "core-js";
 import createDebug from "debug";
 
 const debug = createDebug("sa:TaskQueue");

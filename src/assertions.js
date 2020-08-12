@@ -1,4 +1,3 @@
-import "core-js";
 import R from "ramda";
 import createDebug from "debug";
 import moment from "moment";

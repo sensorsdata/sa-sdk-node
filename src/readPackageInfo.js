@@ -1,4 +1,3 @@
-import "core-js";
 import fs from "fs";
 import pathUtil from "path";
 
