@@ -305,6 +305,9 @@ class SensorsAnalytics extends Subject {
       itemId,
       properties,
     });
+
+    checkPattern(itemType, "itemType");
+    checkExists(itemId, "itemId");
     checkProperties(properties, checkValueType);
     const superize = this.superizeProperties(properties, 4);
     this.internalTrack("item_set", {
@@ -320,6 +323,9 @@ class SensorsAnalytics extends Subject {
       itemType,
       itemId,
     });
+    
+    checkPattern(itemType, "itemType");
+    checkExists(itemId, "itemId");
     const superize = this.superizeProperties({}, 4);
     this.internalTrack("item_delete", {
       itemType,
