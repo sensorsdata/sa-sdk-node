@@ -88,7 +88,7 @@
     "moment": "^2.24.0",
     "mz": "^2.7.0",
     "nedb": "^1.8.0",
-    "node-fetch": "^1.7.3",
+    "node-fetch": "^2.6.1",
     "polyfills": "^2.1.1",
     "ramda": "^0.21.0",
     "regenerator-runtime": "^0.13.7",
