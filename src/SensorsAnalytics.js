@@ -400,8 +400,14 @@ class SensorsAnalytics extends Subject {
   submitTo(options, batchOptions = {}) {
     debug("submitTo(%j, %j)", options, batchOptions);
 
+    if (global.isRunSubmitTo) {
+      return;
+    }
+
     const observable = this.inBatch(batchOptions);
     const submitter = new Submitter(options);
+
+    global.isRunSubmitTo = true;
 
     observable.subscribe(submitter);
 
