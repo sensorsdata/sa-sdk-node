@@ -35,7 +35,6 @@ class SensorsAnalytics extends Subject {
     super();
     this.logger = null;
     this.loggingConsumer = false;
-    this.enableReNameOption();
     this.clearSuperProperties();
   }
 
@@ -406,7 +405,7 @@ class SensorsAnalytics extends Subject {
 
     const observable = this.inBatch(batchOptions);
     const submitter = new Submitter(options);
-
+    
     global.isRunSubmitTo = true;
 
     observable.subscribe(submitter);
