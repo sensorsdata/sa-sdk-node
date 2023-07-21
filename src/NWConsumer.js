@@ -113,12 +113,18 @@ class NWConsumer extends Subject {
   }
 
   async pushCache() {
-    this.db.uploadCache((message) => {
-      this.submit(message).catch((err) => {
-        debug(err);
+    this.db.uploadCache(
+      async (message) => {
+        try {
+          var re = await this.submit(message);
+          return re || false;
+        } catch (err) {
+          debug(err);
+        }
+        return false;
       });
-    });
   }
+
 
   async submit(data) {
     if (data == null) {
@@ -162,7 +168,7 @@ class NWConsumer extends Subject {
     debug("Body: %o", body);
 
     debug("Posting...");
-    fetch(this.url, {
+    return fetch(this.url, {
       method: "POST",
       headers,
       body,
@@ -175,7 +181,7 @@ class NWConsumer extends Subject {
           if (data._id && data.message) {
             this.db.deleteEvent(data);
           }
-          return;
+          return true;
         }
 
         debug("Error: %s", response.status);
@@ -187,7 +193,7 @@ class NWConsumer extends Subject {
           throw new Error("Batch mode is not supported in Debug");
         }
 
-        response.text().then((errorMessage) => {
+        return response.text().then((errorMessage) => {
           throw new Error(errorMessage);
         });
       })
