@@ -193,7 +193,7 @@ class NWConsumer extends Subject {
           throw new Error("Batch mode is not supported in Debug");
         }
 
-        return response.text().then((errorMessage) => {
+        return response.text().then().catch((errorMessage) => {
           throw new Error(errorMessage);
         });
       })
