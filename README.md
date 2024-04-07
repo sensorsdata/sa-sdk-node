@@ -3,7 +3,6 @@
 [![License](https://img.shields.io/github/license/sensorsdata/sa-sdk-android.svg)](https://github.com/sensorsdata/sa-sdk-android/blob/master/LICENSE)
 [![NPM version][npm-image]][npm-url] 
 [![Build Status][ci-image]][ci-url] 
-[![Dependency Status][depstat-image]][depstat-url]
 [![NPM downloads][npm-downloads]][npm-url]
 
 ## 神策简介
