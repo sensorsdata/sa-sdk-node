@@ -23,7 +23,7 @@ class DBCache {
   deleteEvent(event) {
     db.remove({ _id: event._id }, {}, function (err, numRemoved) {
       if (err) {
-        reject(err);
+        debug(err);
       }
     });
   }
