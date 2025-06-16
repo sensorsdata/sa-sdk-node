@@ -1,8 +1,9 @@
-<img src="https://ow-file.sensorsdata.cn/www/home/header/sensors_header_icon.svg" width="200" >
-
+![logo](https://opensource.sensorsdata.cn/wp-content/uploads/logo.png)
+<br><br>
 [![License](https://img.shields.io/github/license/sensorsdata/sa-sdk-android.svg)](https://github.com/sensorsdata/sa-sdk-android/blob/master/LICENSE)
 [![NPM version][npm-image]][npm-url] 
 [![Build Status][ci-image]][ci-url] 
+[![Dependency Status][depstat-image]][depstat-url]
 [![NPM downloads][npm-downloads]][npm-url]
 
 ## 神策简介
@@ -22,24 +23,9 @@ Node 4.0 及以上。
 
 请参考神策官网 [Node SDK 集成文档](https://manual.sensorsdata.cn/sa/latest/tech_sdk_server_node-1573943.html)。
 
-
-## 贡献
-
-* 1.  在您的 GitHub 账户下 fork sa-sdk-node 开源项目；
-* 2.  根据您的需求在本地 clone 一份 sa-sdk-node 源码；
-* 3.  您修改或者新增功能后，push 到您 fork 的远程分支；
-* 4.  创建 pull request，向 sa-sdk-node 官方开发分支提交合入请求；
-* 5.  神策 SDK 研发团队会及时 review 代码，测试通过后合入。
-
-
-## 新书推荐
-
-| [《数据驱动：从方法到实践》](https://item.jd.com/12322322.html) | [《Android 全埋点解决方案》](https://item.jd.com/12574672.html) | [《iOS 全埋点解决方案》](https://item.jd.com/12867068.html)
-| ------ | ------ | ------ |
-
 ## License
 
-[License 协议](https://github.com/sensorsdata/sa-sdk-node/blob/master/LICENSE)
+[License 协议](LICENSE)
 
 ---
 
